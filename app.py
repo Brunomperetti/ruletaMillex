@@ -1,4 +1,3 @@
-import streamlit as st
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
@@ -54,20 +53,15 @@ CATEGORIAS_PRODUCTOS = [
 ]
 
 # Estilos CSS personalizados
-# Reemplaza la sección de estilos CSS con este código:
-
 st.markdown("""
 <style>
-/* Ajustes generales - Forzar negro en TODO */
-* {
-    color: #000000 !important;
-}
-
+/* Ajustes generales */
 html, body, [class*="css"] {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
     font-family: Arial, sans-serif !important;
+    color: #000000 !important; /* 🔥 Forzar letra negra en todo */
 }
 
 header, footer {visibility: hidden; height: 0;}
@@ -79,6 +73,7 @@ header, footer {visibility: hidden; height: 0;}
     background: #ffffff;
     padding: 15px;
     text-align: center;
+    color: #000000 !important;
     font-family: 'Arial Black', sans-serif;
     font-size: 2.5rem;
     border-bottom: 2px solid #000000;
@@ -99,57 +94,43 @@ header, footer {visibility: hidden; height: 0;}
     border: none;
 }
 
-/* Expander - Fondo blanco con texto negro */
-.st-emotion-cache-1h9us2l {
-    background-color: white !important;
-    border: 1px solid black !important;
+/* Expander */
+.st-expanderHeader {
+    background: #ffffff !important; /* Fondo blanco */
+    color: #000000 !important;      /* Texto negro */
+    font-weight: bold;
+    border-radius: 5px !important;
+    border: 1px solid #000000;
 }
 
-.st-emotion-cache-1h9us2l:hover {
-    background-color: white !important;
+/* Formulario */
+.form-content {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-.st-emotion-cache-5rimss p {
-    color: black !important;
+.stTextInput label,
+.stSelectbox label,
+.stMultiselect label,
+.stRadio label {
+    color: #000000 !important; /* ✅ Forzar títulos negros */
+    font-weight: bold;
+    margin-bottom: 4px;
 }
 
-/* Formulario - Asegurar contraste */
-.stTextInput input,
-.stSelectbox select,
-.stMultiselect div,
-.stRadio label,
-.stTextArea textarea {
+.stTextInput>div>div>input,
+.stSelectbox>div>div>select,
+.stMultiselect>div>div>div {
+    border-radius: 4px !important;
+    padding: 6px 10px !important;
+    border: 1px solid #888 !important;
+    width: 250px !important; /* 🔥 Campos más angostos */
     color: #000000 !important;
-    background-color: #ffffff !important;
+    background: #ffffff !important;
 }
 
-/* Placeholder negro */
-input::placeholder {
-    color: #666666 !important;
-}
-
-/* Selectores y dropdowns */
-.st-bd, .st-bj, .st-bk, .st-bl, .st-bm {
-    background-color: white !important;
-    color: black !important;
-}
-
-/* Opciones en dropdown */
-.st-bh, .st-bi {
-    color: black !important;
-    background-color: white !important;
-}
-
-/* Radio buttons y checkboxes */
-.st-c7, .st-c8, .st-c9 {
-    color: black !important;
-}
-
-.st-bt, .st-bu, .st-bv {
-    border-color: black !important;
-}
-
-/* Botón */
 .stButton>button {
     background: #000000 !important;
     color: #ffffff !important;
@@ -161,17 +142,16 @@ input::placeholder {
 .stButton>button:hover {
     background: #333333 !important;
 }
-
-/* Asegurar que los labels sean visibles */
-.st-ae, .st-af, .st-ag, .st-ah {
-    color: black !important;
-}
-
-/* Mensajes de error/advertencia */
-.stAlert {
-    color: black !important;
-}
 </style>
+""", unsafe_allow_html=True)
+
+# Estructura principal
+st.markdown("""
+<div class="main-container">
+    <div class="title-container">RULETA MÁGICA MILLEX</div>
+    <div class="ruleta-container">
+        <iframe class="ruleta-frame" src="https://wheelofnames.com/es/vug-z3k"></iframe>
+    </div>
 """, unsafe_allow_html=True)
 
 # Formulario desplegable
@@ -238,4 +218,3 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
