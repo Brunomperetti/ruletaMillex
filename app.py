@@ -1,7 +1,8 @@
-import streamlit as st
+import streamlit as st 
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
+import random
 
 # URL actualizada de tu Apps Script
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxg1j5w57os20mywlO0Kup-kqMxfnCuIeTbJBcSqJFGPizKVls1xp5WErH0K_yKypMQ/exec"
@@ -43,36 +44,17 @@ st.markdown("""
 
 st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_allow_html=True)
 
-# Ruleta
-components.html("""
-<html>
-  <head>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-        background: transparent;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-      }
-      iframe {
-        border: none;
-        border-radius: 12px;
-        width: 600px;
-        height: 600px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        overflow: hidden;
-        display: block;
-      }
-    </style>
-  </head>
-  <body>
-    <iframe src="https://wheelofnames.com/es/kpz-yz7"></iframe>
-  </body>
-</html>
-""", height=620, scrolling=False)
+# 🎡 Simulación de ruleta con probabilidades ajustadas
+def girar_ruleta():
+    premios = ["10off", "20off", "25off", "5off", "Seguí participando"]
+    probabilidades = [0.25, 0.18, 0.07, 0.40, 0.10]  # Ajustadas: 25% menos chances, 20% cambiado a 18%
+    resultado = random.choices(premios, weights=probabilidades, k=1)[0]
+    return resultado
+
+st.subheader("🎡 Girá la ruleta")
+if st.button("🎯 GIRAR"):
+    resultado = girar_ruleta()
+    st.success(f"🎉 ¡Ganaste: {resultado}!")
 
 # Formulario
 with st.expander("🎁 Cargar datos del ganador", expanded=False):
@@ -83,9 +65,39 @@ with st.expander("🎁 Cargar datos del ganador", expanded=False):
 
         cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
         tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
-        provincia = st.text_input("Provincia")
-        ciudad = st.text_input("Ciudad")
+        
+        # 🔽 Provincia desplegable
+        provincias_arg = [
+            "Buenos Aires", "CABA", "Catamarca", "Chaco", "Chubut", "Córdoba", "Corrientes", "Entre Ríos", 
+            "Formosa", "Jujuy", "La Pampa", "La Rioja", "Mendoza", "Misiones", "Neuquén", 
+            "Río Negro", "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe", 
+            "Santiago del Estero", "Tierra del Fuego", "Tucumán"
+        ]
+        provincia = st.selectbox("Provincia*", provincias_arg)
+        
+        ciudad = st.text_input("Ciudad*")
 
+        # 🔽 Nuevo campo: interés
+        interes = st.selectbox("Interés*", ["Perros", "Gatos", "Roedores", "Aves", "Acuario"])
+
+        # 🔽 Nuevo campo: categorías de productos
+        categorias_productos = [
+            "ACCESORIOS DE LIMPIEZA", "ACCESORIOS DE PELUQUERIA IMPOR",
+            "ACCESORIOS IMPOR. P/PAJAROS -A", "ACCESORIOS IMPORTADOS P/PAJARO",
+            "ACCESORIOS PARA ROEDORES", "ACCESORIOS VARIOS ACUARIO",
+            "ACCESORIOS VARIOS P/GATOS", "ACCESORIOS VARIOS P/PERROS",
+            "ADORNOS CON MOVIMIENTO", "AIREADORES BOYU", "AIREADORES SHANDA",
+            "ALICATE P/ PERROS Y GATOS", "ARBOLES P/GATO", "BEBEDEROS PARA HAMSTER",
+            "BEBEDEROS PARA ROEDORES", "BEBEDERO P/PERRO", "BOMBAS", "BOMBAS PARA ACUARISMO",
+            "BOZAL IMPORTADO TIPO CANASTA", "CALEFACTORES IMPORTADOS", "CANILES PLEGABLES DE METAL",
+            "CARDINAS DE MADERA", "CARDINAS DE PLASTICO", "COLLARES DE AHORQUE CON PUAS",
+            "COLLARES DE CUERO IMPORTADOS", "COLLARES DE NYLON IMPORTADOS",
+            "COLLARES ELASTIZADOS P/GATOS", "COMEDEROS ACERO INOXIDABLE",
+            "COMEDEROS AUTOMATICOS IMPORT.", "COMEDEROS DE PLASTICO IMPORTAD", "CONJUNTO ALPINISTA",
+            # 🔽 Podés seguir completando con el resto...
+        ]
+        categoria = st.selectbox("Categoría de producto*", categorias_productos)
+        
         marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
 
         premio = st.selectbox("Premio ganado*", ["", "10off", "20off", "25off", "5off", "Seguí participando"])
@@ -102,15 +114,15 @@ with st.expander("🎁 Cargar datos del ganador", expanded=False):
                     "tipoCliente": tipo_cliente,
                     "provincia": provincia,
                     "ciudad": ciudad,
+                    "interes": interes,
+                    "categoriaProducto": categoria,
                     "marcas": ", ".join(marcas),
                     "premio": premio
                 }
                 
                 try:
-                    # Envío como POST
                     headers = {'Content-Type': 'application/json'}
                     respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
-                    
                     respuesta.raise_for_status()
                     
                     try:
@@ -126,11 +138,8 @@ with st.expander("🎁 Cargar datos del ganador", expanded=False):
                     except ValueError:
                         st.error("❌ La respuesta no es JSON válido.")
                         st.info("Respuesta cruda recibida: " + respuesta.text[:200] + "...")
-                
                 except requests.exceptions.RequestException as e:
                     st.error(f"❌ Error de conexión: {str(e)}")
-                    st.info("Verifica tu conexión a internet o la URL del script")
-            
             else:
                 st.warning("⚠️ Por favor completa todos los campos obligatorios (*)")
 
