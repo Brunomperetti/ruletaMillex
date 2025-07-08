@@ -54,15 +54,20 @@ CATEGORIAS_PRODUCTOS = [
 ]
 
 # Estilos CSS personalizados
+# Reemplaza la sección de estilos CSS con este código:
+
 st.markdown("""
 <style>
-/* Ajustes generales */
+/* Ajustes generales - Forzar negro en TODO */
+* {
+    color: #000000 !important;
+}
+
 html, body, [class*="css"] {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
     font-family: Arial, sans-serif !important;
-    color: #000000 !important; /* 🔥 Forzar letra negra en todo */
 }
 
 header, footer {visibility: hidden; height: 0;}
@@ -74,7 +79,6 @@ header, footer {visibility: hidden; height: 0;}
     background: #ffffff;
     padding: 15px;
     text-align: center;
-    color: #000000 !important;
     font-family: 'Arial Black', sans-serif;
     font-size: 2.5rem;
     border-bottom: 2px solid #000000;
@@ -95,77 +99,54 @@ header, footer {visibility: hidden; height: 0;}
     border: none;
 }
 
-/* Expander */
-.st-expander {
-    border: 1px solid #000000 !important;
-    border-radius: 5px !important;
+/* Expander - Fondo blanco con texto negro */
+.st-emotion-cache-1h9us2l {
+    background-color: white !important;
+    border: 1px solid black !important;
 }
 
-.st-expanderHeader {
-    background: #ffffff !important;
-    color: #000000 !important;
-    font-weight: bold;
+.st-emotion-cache-1h9us2l:hover {
+    background-color: white !important;
 }
 
-.st-expanderContent {
-    background: #ffffff !important;
+.st-emotion-cache-5rimss p {
+    color: black !important;
 }
 
-/* Formulario */
-.form-content {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
-/* Labels y títulos en negro */
-.stTextInput label,
-.stSelectbox label,
-.stMultiselect label,
+/* Formulario - Asegurar contraste */
+.stTextInput input,
+.stSelectbox select,
+.stMultiselect div,
 .stRadio label,
-.stMarkdown h1,
-.stMarkdown h2,
-.stMarkdown h3,
-.stMarkdown h4,
-.stMarkdown h5,
-.stMarkdown h6,
-.stMarkdown p,
-.stMarkdown div {
-    color: #000000 !important;
-    font-weight: bold;
-}
-
-/* Inputs y selects - negro sobre blanco */
-.stTextInput>div>div>input,
-.stSelectbox>div>div>select,
-.stMultiselect>div>div>div {
-    border-radius: 4px !important;
-    padding: 6px 10px !important;
-    border: 1px solid #888 !important;
-    width: 250px !important;
-    color: #000000 !important;
-    background: #ffffff !important;
-}
-
-/* Radio buttons en negro */
-.stRadio [role="radiogroup"] {
-    color: #000000 !important;
-}
-
-.stRadio [role="radiogroup"] label {
-    color: #000000 !important;
-}
-
-/* Multiselect items seleccionados */
-.stMultiSelect [role="button"] {
+.stTextArea textarea {
     color: #000000 !important;
     background-color: #ffffff !important;
 }
 
-.stMultiSelect [aria-selected="true"] {
-    background-color: #e6e6e6 !important;
-    color: #000000 !important;
+/* Placeholder negro */
+input::placeholder {
+    color: #666666 !important;
+}
+
+/* Selectores y dropdowns */
+.st-bd, .st-bj, .st-bk, .st-bl, .st-bm {
+    background-color: white !important;
+    color: black !important;
+}
+
+/* Opciones en dropdown */
+.st-bh, .st-bi {
+    color: black !important;
+    background-color: white !important;
+}
+
+/* Radio buttons y checkboxes */
+.st-c7, .st-c8, .st-c9 {
+    color: black !important;
+}
+
+.st-bt, .st-bu, .st-bv {
+    border-color: black !important;
 }
 
 /* Botón */
@@ -180,16 +161,17 @@ header, footer {visibility: hidden; height: 0;}
 .stButton>button:hover {
     background: #333333 !important;
 }
-</style>
-""", unsafe_allow_html=True)
 
-# Estructura principal
-st.markdown("""
-<div class="main-container">
-    <div class="title-container">RULETA MÁGICA MILLEX</div>
-    <div class="ruleta-container">
-        <iframe class="ruleta-frame" src="https://wheelofnames.com/es/vug-z3k"></iframe>
-    </div>
+/* Asegurar que los labels sean visibles */
+.st-ae, .st-af, .st-ag, .st-ah {
+    color: black !important;
+}
+
+/* Mensajes de error/advertencia */
+.stAlert {
+    color: black !important;
+}
+</style>
 """, unsafe_allow_html=True)
 
 # Formulario desplegable
