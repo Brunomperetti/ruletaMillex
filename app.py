@@ -62,7 +62,7 @@ html, body, [class*="css"] {
     padding: 0;
     overflow-x: hidden;
     font-family: Arial, sans-serif !important;
-    color: #000000 !important; /* 🔥 Forzar letra negra */
+    color: #000000 !important; /* 🔥 Forzar letra negra en todo */
 }
 
 header, footer {visibility: hidden; height: 0;}
@@ -108,6 +108,15 @@ header, footer {visibility: hidden; height: 0;}
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.stTextInput label,
+.stSelectbox label,
+.stMultiselect label,
+.stRadio label {
+    color: #000000 !important; /* ✅ Forzar títulos negros */
+    font-weight: bold;
+    margin-bottom: 4px;
 }
 
 .stTextInput>div>div>input,
