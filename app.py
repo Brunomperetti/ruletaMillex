@@ -95,14 +95,16 @@ header, footer {visibility: hidden; height: 0;}
     border: none;
 }
 
-/* Formulario */
+/* Expander */
 .st-expanderHeader {
-    background: #000000 !important;
-    color: #ffffff !important;
+    background: #ffffff !important; /* Fondo blanco */
+    color: #000000 !important;      /* Texto negro */
     font-weight: bold;
     border-radius: 5px !important;
+    border: 1px solid #000000;
 }
 
+/* Formulario */
 .form-content {
     background: #ffffff;
     padding: 15px;
@@ -169,10 +171,10 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
         with col2:
             tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
             provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
-            interes = st.multiselect("Interés principal", INTERESES)
+            interes = st.multiselect("Segmento de interés", INTERESES)
         
-        categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS)
-        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+        categoria_productos = st.multiselect("Categorías de productos interesado", CATEGORIAS_PRODUCTOS)
+        marcas = st.multiselect("Interés de marcas", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
         premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
         
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
