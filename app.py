@@ -21,104 +21,117 @@ PROVINCIAS_ARGENTINA = [
 INTERESES = ["Perro", "Gato", "Roedores", "Aves", "Acuario"]
 
 CATEGORIAS_PRODUCTOS = [
-    "ACCESORIOS DE LIMPIEZA", "ACCESORIOS DE PELUQUERIA IMPOR", "ACCESORIOS IMPOR. P/PAJAROS -A", "ACCESORIOS IMPORTADOS P/PAJARO", "ACCESORIOS PARA ROEDORES", "ACCESORIOS VARIOS ACUARIO", "ACCESORIOS VARIOS P/GATOS", "ACCESORIOS VARIOS P/PERROS", "ADORNOS CON MOVIMIENTO", "AIREADORES BOYU", "AIREADORES SHANDA", "ALICATE P/ PERROS Y GATOS", "ARBOLES P/GATO", "BEBEDEROS PARA HAMSTER", "BEBEDEROS PARA ROEDORES", "BEBEDERO P/PERRO", "BOMBAS", "BOMBAS PARA ACUARISMO", "BOZAL IMPORTADO TIPO CANASTA", "CALEFACTORES IMPORTADOS", "CANILES PLEGABLES DE METAL", "CARDINAS DE MADERA", "CARDINAS DE PLASTICO", "COLLARES DE AHORQUE CON PUAS", "COLLARES DE CUERO IMPORTADOS", "COLLARES DE NYLON IMPORTADOS", "COLLARES ELASTIZADOS P/GATOS", "COMEDEROS ACERO INOXIDABLE", "COMEDEROS AUTOMATICOS IMPORT.", "COMEDEROS DE PLASTICO IMPORTAD", "CONJUNTO ALPINISTA", "CONJUNTO NYLON HUESOS", "CONJ.CORREA-COLLAR 10MM", "CONJUNTOS CORREA PRETAL", "CORREA CORTA CON RESORTE", "CORREAS COLLARES PRETALES", "CORREAS DE NYLON IMPORTADOS", "CORREAS EXTENSIBLES", "CUCHAS PARA PERROS", "DESCANSO Y RELAX", "DIFUSORES DE AIRE", "ELEMENTOS DE FILTRACION", "EDUCATIVOS HIGIÉNICOS", "FILTRO EXTERNO BOTELLON", "FILTROS ELECT. INTERNO", "FILTROS ELECTRICOS REBALSE", "FLETES VARIOS", "GRAVAS Y PIEDRAS DECORATIVAS", "HERMIT CRABB ACCESORIOS", "HUESOS DE ALGODON", "JAULA COBAYOS/CONEJOS IMPORT.", "JAULA PARA LOROS", "JAULAS GRANDES DORADAS", "JAULAS GRANDES PINTADAS", "JAULAS MEDIANAS EPOXI IMPORT.", "JAULAS PARA GATOS", "JAULAS PARA HAMSTERS", "JUGUETES BEEZTEES", "JUGUETES CHUCKIT", "JUGUETES CON SOGA", "JUGUETES DE GOMA IMPORT.", "JUGUETES DE LATEX", "JUGUETES DOGZILLA", "JUGUETES GATOS CAT NIP", "JUGUETES GATOS PELOTAS", "JUGUETES GATOS RATITAS", "JUGUETES GATOS VARIOS", "JUGUETES JACKSON GALAXY", "JUGUETES JW", "JUGUETES PARA PERROS", "JUGUETES VINILICOS JUMBO", "LITERAS IMPORTADAS", "MINERALES ABSORBENTES", "MOISES PLASTICO PARA MASCOTAS", "NIDOS IMPORTADOS P/PAJAROS", "PARIDERAS", "PEINES", "PELOTA P-MASCOTAS", "PECERAS DE ACRILICO", "PLANTA PLASTICA EN SOBRE", "PORTANOMBRE COLGANTE", "PRETALES NYLON IMPORTADOS", "PRODAC ALIMENTOS VARIOS", "RASCADORES VARIOS", "REPU. PARA AIREADORES IMPO", "REPU. PARA FILTROS IMPORTA", "REPUESTOS BOMBAS DE AGUA", "REPUESTOS PARA JAULAS IMPORTAD", "RESINA IMPORTADOS", "STICKERS Y DISPLAYS", "TAPA PARA TERRARIOS", "TERMOMETROS", "TRANSPORTADORAS DAYANG", "TRANSPORTADORAS MP", "TUBOS DE ILUMINACION"
+    "ACCESORIOS DE LIMPIEZA", "ACCESORIOS DE PELUQUERIA IMPOR", "ACCESORIOS IMPOR. P/PAJAROS -A",
+    "ACCESORIOS IMPORTADOS P/PAJARO", "ACCESORIOS PARA ROEDORES", "ACCESORIOS VARIOS ACUARIO",
+    "ACCESORIOS VARIOS P/GATOS", "ACCESORIOS VARIOS P/PERROS", "ADORNOS CON MOVIMIENTO",
+    "AIREADORES BOYU", "AIREADORES SHANDA", "ALICATE P/ PERROS Y GATOS", "ARBOLES P/GATO",
+    "BEBEDEROS PARA HAMSTER", "BEBEDEROS PARA ROEDORES", "BEBEDERO P/PERRO", "BOMBAS",
+    "BOMBAS PARA ACUARISMO", "BOZAL IMPORTADO TIPO CANASTA", "CALEFACTORES IMPORTADOS",
+    "CANILES PLEGABLES DE METAL", "CARDINAS DE MADERA", "CARDINAS DE PLASTICO",
+    "COLLARES DE AHORQUE CON PUAS", "COLLARES DE CUERO IMPORTADOS", "COLLARES DE NYLON IMPORTADOS",
+    "COLLARES ELASTIZADOS P/GATOS", "COMEDEROS ACERO INOXIDABLE", "COMEDEROS AUTOMATICOS IMPORT.",
+    "COMEDEROS DE PLASTICO IMPORTAD", "CONJUNTO ALPINISTA", "CONJUNTO NYLON HUESOS",
+    "CONJ.CORREA-COLLAR 10MM", "CONJUNTOS CORREA PRETAL", "CORREA CORTA CON RESORTE",
+    "CORREAS COLLARES PRETALES", "CORREAS DE NYLON IMPORTADOS", "CORREAS EXTENSIBLES",
+    "CUCHAS PARA PERROS", "DESCANSO Y RELAX", "DIFUSORES DE AIRE", "ELEMENTOS DE FILTRACION",
+    "EDUCATIVOS HIGIÉNICOS", "FILTRO EXTERNO BOTELLON", "FILTROS ELECT. INTERNO",
+    "FILTROS ELECTRICOS REBALSE", "FLETES VARIOS", "GRAVAS Y PIEDRAS DECORATIVAS",
+    "HERMIT CRABB ACCESORIOS", "HUESOS DE ALGODON", "JAULA COBAYOS/CONEJOS IMPORT.",
+    "JAULA PARA LOROS", "JAULAS GRANDES DORADAS", "JAULAS GRANDES PINTADAS",
+    "JAULAS MEDIANAS EPOXI IMPORT.", "JAULAS PARA GATOS", "JAULAS PARA HAMSTERS",
+    "JUGUETES BEEZTEES", "JUGUETES CHUCKIT", "JUGUETES CON SOGA", "JUGUETES DE GOMA IMPORT.",
+    "JUGUETES DE LATEX", "JUGUETES DOGZILLA", "JUGUETES GATOS CAT NIP",
+    "JUGUETES GATOS PELOTAS", "JUGUETES GATOS RATITAS", "JUGUETES GATOS VARIOS",
+    "JUGUETES JACKSON GALAXY", "JUGUETES JW", "JUGUETES PARA PERROS", "JUGUETES VINILICOS JUMBO",
+    "LITERAS IMPORTADAS", "MINERALES ABSORBENTES", "MOISES PLASTICO PARA MASCOTAS",
+    "NIDOS IMPORTADOS P/PAJAROS", "PARIDERAS", "PEINES", "PELOTA P-MASCOTAS",
+    "PECERAS DE ACRILICO", "PLANTA PLASTICA EN SOBRE", "PORTANOMBRE COLGANTE",
+    "PRETALES NYLON IMPORTADOS", "PRODAC ALIMENTOS VARIOS", "RASCADORES VARIOS",
+    "REPU. PARA AIREADORES IMPO", "REPU. PARA FILTROS IMPORTA", "REPUESTOS BOMBAS DE AGUA",
+    "REPUESTOS PARA JAULAS IMPORTAD", "RESINA IMPORTADOS", "STICKERS Y DISPLAYS",
+    "TAPA PARA TERRARIOS", "TERMOMETROS", "TRANSPORTADORAS DAYANG", "TRANSPORTADORAS MP",
+    "TUBOS DE ILUMINACION"
 ]
 
 # Estilos CSS personalizados
 st.markdown("""
 <style>
-    html, body, [class*="css"] {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-    }
+/* Ajustes generales */
+html, body, [class*="css"] {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif !important;
+    color: #000000 !important; /* 🔥 Forzar letra negra */
+}
 
-    header, footer {visibility: hidden; height: 0;}
-    .block-container {padding: 0; margin: 0; max-width: 100%;}
-    .stApp {background: #f5f5f5; padding: 0 !important;}
+header, footer {visibility: hidden; height: 0;}
+.block-container {padding: 0; margin: 0 auto; max-width: 900px;}
+.stApp {background: #f5f5f5; padding: 0 !important;}
 
-    .title-container {
-        background: #f5f5f5;
-        padding: 20px 0;
-        text-align: center;
-        color: #000000;
-        font-family: 'Arial Black', sans-serif;
-        font-size: 2.8rem;
-        margin: 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+/* Título */
+.title-container {
+    background: #ffffff;
+    padding: 15px;
+    text-align: center;
+    color: #000000 !important;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 2.5rem;
+    border-bottom: 2px solid #000000;
+}
 
-    .main-container {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-    }
+/* Ruleta */
+.ruleta-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000000;
+    height: 60vh;
+}
 
-    .ruleta-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #000;
-        height: 80vh;
-        padding: 0;
-        margin: 0;
-    }
+.ruleta-frame {
+    width: 600px;
+    height: 600px;
+    border: none;
+}
 
-    .ruleta-frame {
-        width: 800px;
-        height: 800px;
-        border: none;
-    }
+/* Formulario */
+.st-expanderHeader {
+    background: #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    border-radius: 5px !important;
+}
 
-    .st-expanderHeader {
-        background: #000 !important;
-        color: #ffffff !important;
-        font-weight: bold;
-    }
+.form-content {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
 
-    .form-content {
-        background: white;
-        padding: 20px;
-        border-radius: 0 0 10px 10px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
+.stTextInput>div>div>input,
+.stSelectbox>div>div>select,
+.stMultiselect>div>div>div {
+    border-radius: 4px !important;
+    padding: 6px 10px !important;
+    border: 1px solid #888 !important;
+    width: 250px !important; /* 🔥 Campos más angostos */
+    color: #000000 !important;
+    background: #ffffff !important;
+}
 
-    .stTextInput>div>div>input, 
-    .stSelectbox>div>div>select,
-    .stMultiselect>div>div>div {
-        border-radius: 6px;
-        padding: 8px;
-        border: 1px solid #bbb;
-        max-width: 200px; /* Más angosto */
-        color: #000000;
-    }
+.stButton>button {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border-radius: 4px;
+    padding: 8px 15px;
+    font-size: 1rem;
+}
 
-    .stTextInput label, .stSelectbox label, .stMultiselect label, .stRadio label {
-        color: #000000 !important;
-        font-weight: 500;
-    }
-
-    .stButton>button {
-        background: #000000;
-        color: white;
-        font-weight: bold;
-        border-radius: 6px;
-        padding: 10px 15px;
-        width: 40%;
-        border: none;
-        font-size: 1rem;
-        margin-top: 10px;
-    }
-
-    .stButton>button:hover {
-        background: #333333;
-        transform: translateY(-2px);
-    }
-
-    .stRadio>div {
-        flex-direction: row;
-        gap: 10px;
-    }
+.stButton>button:hover {
+    background: #333333 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -131,12 +144,12 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Formulario desplegable pegado abajo
+# Formulario desplegable
 with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('<div class="form-content">', unsafe_allow_html=True)
     
     with st.form("formulario", clear_on_submit=True):
-        col1, col2 = st.columns([1, 1])  # Igual ancho pero más chicos
+        col1, col2 = st.columns(2)
         
         with col1:
             nombre = st.text_input("Nombre y apellido*")
