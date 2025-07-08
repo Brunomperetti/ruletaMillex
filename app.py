@@ -227,3 +227,4 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
 
 st.markdown('</div>', unsafe_allow_html=True)
 
+
