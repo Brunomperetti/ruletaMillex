@@ -53,95 +53,31 @@ CATEGORIAS_PRODUCTOS = [
     "TUBOS DE ILUMINACION"
 ]
 
-# Estilos CSS personalizados
+# Estilos CSS forzando textos negros y campos más angostos
 st.markdown("""
 <style>
-/* Ajustes generales */
 html, body, [class*="css"] {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    font-family: Arial, sans-serif !important;
-    color: #000000 !important; /* 🔥 Forzar letra negra en todo */
-}
-
-header, footer {visibility: hidden; height: 0;}
-.block-container {padding: 0; margin: 0 auto; max-width: 900px;}
-.stApp {background: #f5f5f5; padding: 0 !important;}
-
-/* Título */
-.title-container {
-    background: #ffffff;
-    padding: 15px;
-    text-align: center;
     color: #000000 !important;
-    font-family: 'Arial Black', sans-serif;
-    font-size: 2.5rem;
-    border-bottom: 2px solid #000000;
+    font-family: Arial, sans-serif !important;
 }
-
-/* Ruleta */
-.ruleta-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #000000;
-    height: 60vh;
+.st-emotion-cache-1avcm0n, .st-emotion-cache-1avcm0n h1, .st-emotion-cache-1avcm0n label,
+.st-emotion-cache-1c7y2kd, .st-emotion-cache-1c7y2kd span, .stMarkdown p, label {
+    color: #000000 !important;
 }
-
-.ruleta-frame {
-    width: 600px;
-    height: 600px;
-    border: none;
-}
-
-/* Expander */
 .st-expanderHeader {
-    background: #ffffff !important; /* Fondo blanco */
-    color: #000000 !important;      /* Texto negro */
-    font-weight: bold;
-    border-radius: 5px !important;
-    border: 1px solid #000000;
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    font-weight: bold !important;
 }
-
-/* Formulario */
-.form-content {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
-.stTextInput label,
-.stSelectbox label,
-.stMultiselect label,
-.stRadio label {
-    color: #000000 !important; /* ✅ Forzar títulos negros */
-    font-weight: bold;
-    margin-bottom: 4px;
-}
-
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
 .stMultiselect>div>div>div {
-    border-radius: 4px !important;
-    padding: 6px 10px !important;
-    border: 1px solid #888 !important;
-    width: 250px !important; /* 🔥 Campos más angostos */
-    color: #000000 !important;
-    background: #ffffff !important;
+    max-width: 250px !important; /* Campos más angostos */
 }
-
 .stButton>button {
-    background: #000000 !important;
-    color: #ffffff !important;
-    border-radius: 4px;
-    padding: 8px 15px;
-    font-size: 1rem;
-}
-
-.stButton>button:hover {
-    background: #333333 !important;
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border-radius: 6px;
 }
 </style>
 """, unsafe_allow_html=True)
