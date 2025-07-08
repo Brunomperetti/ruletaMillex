@@ -3,218 +3,154 @@ import streamlit.components.v1 as components
 import urllib.parse
 import requests
 
-# URL actualizada de tu Apps Script
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxg1j5w57os20mywlO0Kup-kqMxfnCuIeTbJBcSqJFGPizKVls1xp5WErH0K_yKypMQ/exec"
-
 # Configuración de la página
 st.set_page_config(page_title="Ruleta Mágica Millex", layout="wide", initial_sidebar_state="collapsed")
-
-# Listas de opciones
-PROVINCIAS_ARGENTINA = [
-    "Buenos Aires", "Catamarca", "Chaco", "Chubut", "Córdoba", 
-    "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", 
-    "La Rioja", "Mendoza", "Misiones", "Neuquén", "Río Negro", 
-    "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe", 
-    "Santiago del Estero", "Tierra del Fuego", "Tucumán"
-]
-
-INTERESES = ["Perro", "Gato", "Roedores", "Aves", "Acuario"]
-
-CATEGORIAS_PRODUCTOS = [
-    "ACCESORIOS DE LIMPIEZA", "ACCESORIOS DE PELUQUERIA IMPOR", 
-    # ... (todas las demás categorías que proporcionaste)
-]
 
 # Estilos CSS personalizados
 st.markdown("""
 <style>
-    /* Reset completo */
+    /* Reset y base */
     html, body, [class*="css"] {
         margin: 0;
         padding: 0;
-        overflow-x: hidden;
+        font-family: 'Arial', sans-serif;
     }
     
-    /* Eliminar espacios no deseados */
-    header, footer {visibility: hidden; height: 0;}
-    .block-container {padding: 0; margin: 0; max-width: 100%;}
-    .stApp {background: #f5f5f5; padding: 0 !important;}
-    
-    /* Título rojo */
+    /* Título principal */
     .title-container {
         background: #ce1f2d;
         padding: 20px 0;
         text-align: center;
         color: white;
-        font-family: 'Arial Black', sans-serif;
-        font-size: 2.8rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        font-size: 2.5rem;
+        font-weight: bold;
         margin: 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
-    /* Contenedor principal */
-    .main-container {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-    }
-    
-    /* Ruleta centrada */
+    /* Contenedor de la ruleta */
     .ruleta-container {
         display: flex;
         justify-content: center;
         align-items: center;
         background: #000;
-        height: 80vh;
-        padding: 0;
-        margin: 0;
+        height: 70vh;
+        padding: 20px 0;
     }
     
-    .ruleta-frame {
-        width: 800px;
-        height: 800px;
-        border: none;
-    }
-    
-    /* Formulario desplegable pegado abajo */
-    .form-expander {
+    /* Estilos del expander del formulario */
+    .st-expander {
         background: #ce1f2d;
-        color: white !important;
+        border: none !important;
         border-radius: 0 !important;
-        margin-top: 0 !important;
+        margin: 0 !important;
     }
     
-    .form-expander .st-emotion-cache-1hynsf2 {
-        background: #ce1f2d;
-        color: white !important;
+    .st-expanderHeader {
+        background: #ce1f2d !important;
+        color: #ce1f2d !important;  /* Cambiado a rojo */
+        font-size: 1.5rem !important;
+        padding: 15px 20px !important;
     }
     
-    .form-expander .st-emotion-cache-1hynsf2 svg {
-        color: white !important;
+    .st-expanderHeader:hover {
+        background: #b51a27 !important;
     }
     
-    .form-content {
+    .st-expanderContent {
         background: white;
         padding: 25px;
-        border-radius: 0 0 10px 10px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     
-    /* Campos del formulario */
+    /* Campos del formulario - más angostos */
     .stTextInput>div>div>input, 
     .stSelectbox>div>div>select,
     .stMultiselect>div>div>div {
-        border-radius: 6px;
-        padding: 12px;
-        border: 1px solid #ddd;
+        border: 2px solid #e0e0e0 !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        width: 90% !important;  /* Ancho reducido */
+        max-width: 300px !important;
     }
     
-    /* Botón rojo */
+    /* Labels en rojo */
+    .stTextInput label, .stSelectbox label,
+    .stMultiselect label, .stRadio label,
+    .st-expanderHeader p {  /* Texto del expander en rojo */
+        color: #ce1f2d !important;
+        font-weight: bold !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Botón de enviar */
     .stButton>button {
-        background: #ce1f2d;
-        color: white;
-        font-weight: bold;
-        border-radius: 8px;
-        padding: 14px 28px;
-        width: 100%;
-        border: none;
-        font-size: 1.1rem;
-        transition: all 0.2s;
-        margin-top: 20px;
+        background: #ce1f2d !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 14px 28px !important;
+        font-size: 1.1rem !important;
+        font-weight: bold !important;
+        width: 90% !important;
+        max-width: 300px !important;
+        margin-top: 20px !important;
+        transition: all 0.3s !important;
     }
     
     .stButton>button:hover {
-        background: #a71925;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(206, 31, 45, 0.3);
+        background: #b51a27 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
     }
     
     /* Radio buttons */
     .stRadio>div {
-        flex-direction: row;
-        gap: 20px;
+        flex-direction: row !important;
+        gap: 30px !important;
     }
     
-    /* Textos en rojo */
-    .stMarkdown p, .stMarkdown label, .stTextInput label, .stSelectbox label, 
-    .stMultiselect label, .stRadio label {
+    /* Columnas del formulario */
+    .stForm {
+        padding: 0 !important;
+    }
+    
+    /* Icono del expander en rojo */
+    .st-expanderHeader svg {
         color: #ce1f2d !important;
-        font-weight: 500;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Estructura principal
-st.markdown("""
-<div class="main-container">
-    <div class="title-container">RULETA MÁGICA MILLEX</div>
-    <div class="ruleta-container">
-        <iframe class="ruleta-frame" src="https://wheelofnames.com/es/vug-z3k"></iframe>
-    </div>
-""", unsafe_allow_html=True)
+# Título principal
+st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_allow_html=True)
 
-# Formulario desplegable pegado abajo
-with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
-    st.markdown('<div class="form-content">', unsafe_allow_html=True)
-    
-    with st.form("formulario", clear_on_submit=True):
+# Contenedor de la ruleta
+st.markdown('<div class="ruleta-container">', unsafe_allow_html=True)
+components.html("""
+    <iframe src="https://wheelofnames.com/es/vug-z3k" width="700" height="700" style="border:none;"></iframe>
+""", height=720)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Formulario desplegable (con texto en rojo)
+with st.expander("📝 CARGAR DATOS DEL GANADOR", expanded=True):
+    with st.form(key='formulario_ganador'):
         col1, col2 = st.columns(2)
         
         with col1:
-            nombre = st.text_input("Nombre y apellido*")
-            razon = st.text_input("Razón social*")
-            whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...")
-            cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
+            nombre = st.text_input("Nombre y apellido*", key='nombre')
+            razon_social = st.text_input("Razón social*", key='razon_social')
+            whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...", key='whatsapp')
             
         with col2:
-            tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
-            provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
-            interes = st.multiselect("Interés principal", INTERESES)
+            tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"], key='tipo_cliente')
+            provincia = st.selectbox("Provincia*", ["Buenos Aires", "Córdoba", "Santa Fe", "Mendoza", "Otra"], key='provincia')
+            cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"], key='cliente_tipo', horizontal=True)
         
-        categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS)
-        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
-        premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
+        premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"], key='premio')
         
-        enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
+        submit_button = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
         
-        if enviar:
-            if nombre and razon and whatsapp and premio and provincia:
-                datos = {
-                    "nombre": nombre,
-                    "razonSocial": razon,
-                    "whatsapp": whatsapp,
-                    "clienteTipo": cliente_tipo,
-                    "tipoCliente": tipo_cliente,
-                    "provincia": provincia,
-                    "interes": ", ".join(interes) if interes else "",
-                    "categoriaProductos": ", ".join(categoria_productos) if categoria_productos else "",
-                    "marcas": ", ".join(marcas) if marcas else "",
-                    "premio": premio
-                }
-                
-                try:
-                    headers = {'Content-Type': 'application/json'}
-                    respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
-                    respuesta.raise_for_status()
-                    
-                    try:
-                        respuesta_json = respuesta.json()
-                        if respuesta_json.get("status") in ["success", "ok"]:
-                            mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
-                            whatsapp_limpio = whatsapp.strip().replace(" ", "").replace("-", "")
-                            link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
-                            st.success("✅ Datos guardados correctamente!")
-                            st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
-                        else:
-                            st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
-                    except ValueError:
-                        st.error("❌ La respuesta no es JSON válido.")
-                except requests.exceptions.RequestException as e:
-                    st.error(f"❌ Error de conexión: {str(e)}")
+        if submit_button:
+            if nombre and razon_social and whatsapp and premio:
+                st.success("Datos enviados correctamente!")
             else:
-                st.warning("⚠️ Por favor completa todos los campos obligatorios (*)")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
+                st.warning("Por favor complete todos los campos obligatorios (*)")
