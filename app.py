@@ -9,6 +9,115 @@ WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxg1j5w57os20mywlO0Kup-kq
 # Configuración de la página
 st.set_page_config(page_title="Ruleta Mágica Millex", layout="wide")
 
+# Listas de opciones
+PROVINCIAS_ARGENTINA = [
+    "Buenos Aires", "Catamarca", "Chaco", "Chubut", "Córdoba", 
+    "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", 
+    "La Rioja", "Mendoza", "Misiones", "Neuquén", "Río Negro", 
+    "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe", 
+    "Santiago del Estero", "Tierra del Fuego", "Tucumán"
+]
+
+INTERESES = ["Perro", "Gato", "Roedores", "Aves", "Acuario"]
+
+CATEGORIAS_PRODUCTOS = [
+    "ACCESORIOS DE LIMPIEZA",
+    "ACCESORIOS DE PELUQUERIA IMPOR",
+    "ACCESORIOS IMPOR. P/PAJAROS -A",
+    "ACCESORIOS IMPORTADOS P/PAJARO",
+    "ACCESORIOS PARA ROEDORES",
+    "ACCESORIOS VARIOS ACUARIO",
+    "ACCESORIOS VARIOS P/GATOS",
+    "ACCESORIOS VARIOS P/PERROS",
+    "ADORNOS CON MOVIMIENTO",
+    "AIREADORES BOYU",
+    "AIREADORES SHANDA",
+    "ALICATE P/ PERROS Y GATOS",
+    "ARBOLES P/GATO",
+    "BEBEDEROS PARA HAMSTER",
+    "BEBEDEROS PARA ROEDORES",
+    "BEBEDERO P/PERRO",
+    "BOMBAS",
+    "BOMBAS PARA ACUARISMO",
+    "BOZAL IMPORTADO TIPO CANASTA",
+    "CALEFACTORES IMPORTADOS",
+    "CANILES PLEGABLES DE METAL",
+    "CARDINAS DE MADERA",
+    "CARDINAS DE PLASTICO",
+    "COLLARES DE AHORQUE CON PUAS",
+    "COLLARES DE CUERO IMPORTADOS",
+    "COLLARES DE NYLON IMPORTADOS",
+    "COLLARES ELASTIZADOS P/GATOS",
+    "COMEDEROS ACERO INOXIDABLE",
+    "COMEDEROS AUTOMATICOS IMPORT.",
+    "COMEDEROS DE PLASTICO IMPORTAD",
+    "CONJUNTO ALPINISTA",
+    "CONJUNTO NYLON HUESOS",
+    "CONJ.CORREA-COLLAR 10MM",
+    "CONJUNTOS CORREA PRETAL",
+    "CORREA CORTA CON RESORTE",
+    "CORREAS COLLARES PRETALES",
+    "CORREAS DE NYLON IMPORTADOS",
+    "CORREAS EXTENSIBLES",
+    "CUCHAS PARA PERROS",
+    "DESCANSO Y RELAX",
+    "DIFUSORES DE AIRE",
+    "ELEMENTOS DE FILTRACION",
+    "EDUCATIVOS HIGIÉNICOS",
+    "FILTRO EXTERNO BOTELLON",
+    "FILTROS ELECT. INTERNO",
+    "FILTROS ELECTRICOS REBALSE",
+    "FLETES VARIOS",
+    "GRAVAS Y PIEDRAS DECORATIVAS",
+    "HERMIT CRABB ACCESORIOS",
+    "HUESOS DE ALGODON",
+    "JAULA COBAYOS/CONEJOS IMPORT.",
+    "JAULA PARA LOROS",
+    "JAULAS GRANDES DORADAS",
+    "JAULAS GRANDES PINTADAS",
+    "JAULAS MEDIANAS EPOXI IMPORT.",
+    "JAULAS PARA GATOS",
+    "JAULAS PARA HAMSTERS",
+    "JUGUETES BEEZTEES",
+    "JUGUETES CHUCKIT",
+    "JUGUETES CON SOGA",
+    "JUGUETES DE GOMA IMPORT.",
+    "JUGUETES DE LATEX",
+    "JUGUETES DOGZILLA",
+    "JUGUETES GATOS CAT NIP",
+    "JUGUETES GATOS PELOTAS",
+    "JUGUETES GATOS RATITAS",
+    "JUGUETES GATOS VARIOS",
+    "JUGUETES JACKSON GALAXY",
+    "JUGUETES JW",
+    "JUGUETES PARA PERROS",
+    "JUGUETES VINILICOS JUMBO",
+    "LITERAS IMPORTADAS",
+    "MINERALES ABSORBENTES",
+    "MOISES PLASTICO PARA MASCOTAS",
+    "NIDOS IMPORTADOS P/PAJAROS",
+    "PARIDERAS",
+    "PEINES",
+    "PELOTA P-MASCOTAS",
+    "PECERAS DE ACRILICO",
+    "PLANTA PLASTICA EN SOBRE",
+    "PORTANOMBRE COLGANTE",
+    "PRETALES NYLON IMPORTADOS",
+    "PRODAC ALIMENTOS VARIOS",
+    "RASCADORES VARIOS",
+    "REPU. PARA AIREADORES IMPO",
+    "REPU. PARA FILTROS IMPORTA",
+    "REPUESTOS BOMBAS DE AGUA",
+    "REPUESTOS PARA JAULAS IMPORTAD",
+    "RESINA IMPORTADOS",
+    "STICKERS Y DISPLAYS",
+    "TAPA PARA TERRARIOS",
+    "TERMOMETROS",
+    "TRANSPORTADORAS DAYANG",
+    "TRANSPORTADORAS MP",
+    "TUBOS DE ILUMINACION"
+]
+
 # Estilos CSS
 st.markdown("""
 <style>
@@ -33,6 +142,7 @@ st.markdown("""
         font-weight: bold;
         border-radius: 8px;
         padding: 10px 24px;
+        margin-top: 20px;
     }
     .stTextInput>div>div>input {
         border-radius: 8px;
@@ -42,24 +152,16 @@ st.markdown("""
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        height: 80vh;
         background-color: #000;
-        margin-bottom: -150px;
-    }
-    .ruleta-iframe {
-        width: 1000px;
-        height: 1000px;
-        border: none;
-        transform: scale(0.9);
     }
     .form-container {
         padding: 20px;
         background: white;
-        z-index: 100;
-        position: relative;
     }
-    body {
-        overflow: hidden;
+    .stMultiSelect [data-baseweb=select] span{
+        max-width: 250px;
+        font-size: 0.9rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -70,8 +172,8 @@ st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_a
 # 🎡 Ruleta embebida centrada
 st.markdown('<div class="ruleta-container">', unsafe_allow_html=True)
 components.html("""
-    <iframe class="ruleta-iframe" src="https://wheelofnames.com/es/aep-cej"></iframe>
-""", height=1000, scrolling=False)
+    <iframe src="https://wheelofnames.com/es/vug-z3k" width="800" height="800" style="border:none;"></iframe>
+""", height=800, scrolling=False)
 st.markdown('</div>', unsafe_allow_html=True)
 
 # 📋 Formulario
@@ -87,14 +189,17 @@ with st.expander("🎁 Cargar datos del ganador", expanded=False):
             
         with col2:
             tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
-            provincia = st.text_input("Provincia")
-            marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
-            premio = st.selectbox("Premio ganado*", ["", "10off", "20off", "25off", "5off", "Seguí participando"])
+            provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
+            interes = st.multiselect("Interés", INTERESES)
+            categoria_productos = st.multiselect("Categorías de productos", CATEGORIAS_PRODUCTOS)
+        
+        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+        premio = st.selectbox("Premio ganado*", ["", "10off", "20off", "25off", "5off", "Seguí participando"])
         
         enviar = st.form_submit_button("Enviar y guardar")
         
         if enviar:
-            if nombre and razon and whatsapp and premio:
+            if nombre and razon and whatsapp and premio and provincia:
                 datos = {
                     "nombre": nombre,
                     "razonSocial": razon,
@@ -102,7 +207,9 @@ with st.expander("🎁 Cargar datos del ganador", expanded=False):
                     "clienteTipo": cliente_tipo,
                     "tipoCliente": tipo_cliente,
                     "provincia": provincia,
-                    "marcas": ", ".join(marcas),
+                    "interes": ", ".join(interes) if interes else "",
+                    "categoriaProductos": ", ".join(categoria_productos) if categoria_productos else "",
+                    "marcas": ", ".join(marcas) if marcas else "",
                     "premio": premio
                 }
                 
