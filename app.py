@@ -193,7 +193,7 @@ with st.expander("🎁 Cargar datos del ganador", expanded=False):
             interes = st.multiselect("Interés", INTERESES)
             categoria_productos = st.multiselect("Categorías de productos", CATEGORIAS_PRODUCTOS)
         
-        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+        marcas = st.multiselect("Interes de Marcas", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
         premio = st.selectbox("Premio ganado*", ["", "10off", "20off", "25off", "5off", "Seguí participando"])
         
         enviar = st.form_submit_button("Enviar y guardar")
