@@ -27,18 +27,16 @@ CATEGORIAS_PRODUCTOS = [
 # Estilos CSS personalizados
 st.markdown("""
 <style>
-    /* Reset completo */
     html, body, [class*="css"] {
         margin: 0;
         padding: 0;
         overflow-x: hidden;
     }
-    
+
     header, footer {visibility: hidden; height: 0;}
     .block-container {padding: 0; margin: 0; max-width: 100%;}
     .stApp {background: #f5f5f5; padding: 0 !important;}
-    
-    /* Título negro */
+
     .title-container {
         background: #f5f5f5;
         padding: 20px 0;
@@ -49,13 +47,13 @@ st.markdown("""
         margin: 0;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    
+
     .main-container {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
     }
-    
+
     .ruleta-container {
         display: flex;
         justify-content: center;
@@ -65,35 +63,33 @@ st.markdown("""
         padding: 0;
         margin: 0;
     }
-    
+
     .ruleta-frame {
         width: 800px;
         height: 800px;
         border: none;
     }
-    
-    /* Expander en negro */
+
     .st-expanderHeader {
         background: #000 !important;
         color: #ffffff !important;
         font-weight: bold;
     }
-    
+
     .form-content {
         background: white;
         padding: 20px;
         border-radius: 0 0 10px 10px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
-    
-    /* Inputs angostos y letra negra */
+
     .stTextInput>div>div>input, 
     .stSelectbox>div>div>select,
     .stMultiselect>div>div>div {
         border-radius: 6px;
         padding: 8px;
         border: 1px solid #bbb;
-        max-width: 250px; /* 🔥 Más angosto */
+        max-width: 200px; /* Más angosto */
         color: #000000;
     }
 
@@ -102,7 +98,6 @@ st.markdown("""
         font-weight: 500;
     }
 
-    /* Botón negro */
     .stButton>button {
         background: #000000;
         color: white;
@@ -114,7 +109,7 @@ st.markdown("""
         font-size: 1rem;
         margin-top: 10px;
     }
-    
+
     .stButton>button:hover {
         background: #333333;
         transform: translateY(-2px);
@@ -141,7 +136,7 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('<div class="form-content">', unsafe_allow_html=True)
     
     with st.form("formulario", clear_on_submit=True):
-        col1, col2 = st.columns(2)
+        col1, col2 = st.columns([1, 1])  # Igual ancho pero más chicos
         
         with col1:
             nombre = st.text_input("Nombre y apellido*")
