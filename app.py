@@ -28,136 +28,163 @@ CATEGORIAS_PRODUCTOS = [
 # Estilos CSS personalizados
 st.markdown("""
 <style>
-    /* Eliminar espacios no deseados */
-    header, footer {visibility: hidden;}
-    .block-container {padding: 0; margin: 0; max-width: 100%;}
-    .stApp {background: #f0f2f6;}
+    /* Reset completo de márgenes y padding */
+    html, body, [class*="css"] {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
     
-    /* Título centrado y con mejor diseño */
+    /* Eliminar espacios no deseados */
+    header, footer {visibility: hidden; height: 0;}
+    .block-container {padding: 0; margin: 0; max-width: 100%;}
+    .stApp {background: #f5f5f5; padding: 0 !important;}
+    
+    /* Título centrado con rojo #ce1f2d */
     .title-container {
-        background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+        background: #ce1f2d;
         padding: 20px 0;
         text-align: center;
         color: white;
         font-family: 'Arial Black', sans-serif;
         font-size: 2.8rem;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        margin-bottom: 0;
+        margin: 0;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        border-bottom: 4px solid #4a148c;
+        position: relative;
+        z-index: 100;
     }
     
-    /* Contenedor de la ruleta perfectamente centrado */
-    .ruleta-wrapper {
+    /* Contenedor principal de la ruleta */
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: #f5f5f5;
+    }
+    
+    /* Ruleta perfectamente centrada */
+    .ruleta-section {
+        flex: 1;
         display: flex;
         justify-content: center;
         align-items: center;
         background: #000;
-        padding: 40px 0;
-        margin: 0 auto;
-        width: 100%;
+        padding: 0;
+        margin: 0;
+        height: calc(100vh - 80px); /* Resta el alto del título */
     }
     
-    .ruleta-container {
+    .ruleta-frame {
         width: 800px;
         height: 800px;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border: none;
+        margin: 0 auto;
     }
     
-    /* Mejoras para el formulario */
-    .form-container {
+    /* Sección del formulario con espacio equivalente */
+    .form-section {
+        min-height: 800px; /* Igual al tamaño de la ruleta */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 20px;
+        background: #f5f5f5;
+    }
+    
+    /* Estilos del formulario */
+    .form-box {
         background: white;
-        border-radius: 12px;
-        padding: 25px;
-        margin: 30px auto;
+        border-radius: 10px;
+        padding: 30px;
+        width: 100%;
         max-width: 900px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-top: -100px; /* Solapa ligeramente la ruleta */
+        position: relative;
+        z-index: 50;
     }
     
     .form-title {
-        color: #6e48aa;
+        color: #ce1f2d;
         font-size: 1.8rem;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         text-align: center;
         font-weight: bold;
     }
     
-    .stButton>button {
-        background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
-        color: white;
-        font-weight: bold;
-        border-radius: 8px;
-        padding: 12px 28px;
-        width: 100%;
-        border: none;
-        font-size: 1.1rem;
-        transition: all 0.3s;
-    }
-    
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(110, 72, 170, 0.4);
-    }
-    
+    /* Estilos para los inputs */
     .stTextInput>div>div>input, 
     .stSelectbox>div>div>select,
     .stMultiselect>div>div>div {
-        border-radius: 8px;
+        border-radius: 6px;
         padding: 12px;
         border: 1px solid #ddd;
     }
     
-    /* Eliminar scroll no deseado */
-    html, body, [class*="css"]  {
-        overflow-x: hidden;
+    /* Botón rojo */
+    .stButton>button {
+        background: #ce1f2d;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 14px 28px;
+        width: 100%;
+        border: none;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+        margin-top: 20px;
     }
     
-    /* Mejorar los radio buttons */
+    .stButton>button:hover {
+        background: #a71925;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(206, 31, 45, 0.3);
+    }
+    
+    /* Radio buttons en línea */
     .stRadio>div {
         flex-direction: row;
         gap: 20px;
     }
     
-    .stRadio>div>label {
-        margin-left: 5px;
+    /* Eliminar cualquier scroll */
+    .stApp>div {
+        overflow: hidden !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Título principal
-st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_allow_html=True)
+# Estructura principal
+st.markdown("""
+<div class="main-container">
+    <div class="title-container">RULETA MÁGICA MILLEX</div>
+    <div class="ruleta-section">
+        <iframe class="ruleta-frame" src="https://wheelofnames.com/es/vug-z3k"></iframe>
+    </div>
+    <div class="form-section">
+        <div class="form-box">
+""", unsafe_allow_html=True)
 
-# 🎡 Ruleta embebida perfectamente centrada
-st.markdown('<div class="ruleta-wrapper">', unsafe_allow_html=True)
-st.markdown('<div class="ruleta-container">', unsafe_allow_html=True)
-components.html("""
-    <iframe src="https://wheelofnames.com/es/vug-z3k" width="800" height="800" style="border:none;"></iframe>
-""", height=800, scrolling=False)
-st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# 📋 Formulario mejorado
-st.markdown('<div class="form-container">', unsafe_allow_html=True)
+# Contenido del formulario
 st.markdown('<div class="form-title">🎁 Cargar datos del ganador</div>', unsafe_allow_html=True)
 
 with st.form("formulario", clear_on_submit=True):
     col1, col2 = st.columns(2)
     
     with col1:
-        nombre = st.text_input("Nombre y apellido*", help="Nombre completo del ganador")
-        razon = st.text_input("Razón social*", help="Nombre del negocio o empresa")
-        whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...", help="Ejemplo: +5491123456789")
+        nombre = st.text_input("Nombre y apellido*")
+        razon = st.text_input("Razón social*")
+        whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...")
         cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
         
     with col2:
         tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
         provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
-        interes = st.multiselect("Interés principal", INTERESES, help="Seleccione los intereses principales del cliente")
+        interes = st.multiselect("Interés principal", INTERESES)
     
-    categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS, help="Seleccione las categorías relevantes")
-    marcas = st.multiselect("Marcas de interes", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+    categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS)
+    marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
     premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
     
     enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
@@ -199,5 +226,9 @@ with st.form("formulario", clear_on_submit=True):
         else:
             st.warning("⚠️ Por favor completa todos los campos obligatorios (*)")
 
-st.markdown('</div>', unsafe_allow_html=True)
-
+# Cierre de la estructura
+st.markdown("""
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
