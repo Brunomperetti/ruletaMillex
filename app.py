@@ -80,20 +80,27 @@ st.markdown("""
     /* Formulario desplegable pegado abajo */
     .form-expander {
         background: #ce1f2d;
-        color: white !important;
+        color: #ce1f2d !important; /* Texto rojo */
         border-radius: 0 !important;
         margin-top: 0 !important;
     }
-    
     .form-expander .st-emotion-cache-1hynsf2 {
         background: #ce1f2d;
-        color: white !important;
+        color: #ce1f2d !important; /* Texto rojo */
     }
-    
     .form-expander .st-emotion-cache-1hynsf2 svg {
         color: white !important;
     }
-    
+    .form-expander .st-emotion-cache-1hynsf2:hover {
+        background: #a71925 !important;
+    }
+
+    /* Texto del encabezado del desplegable en rojo */
+    .st-expanderHeader {
+        color: #ce1f2d !important;
+        font-weight: bold;
+    }
+
     .form-content {
         background: white;
         padding: 25px;
@@ -106,18 +113,19 @@ st.markdown("""
     .stSelectbox>div>div>select,
     .stMultiselect>div>div>div {
         border-radius: 6px;
-        padding: 12px;
+        padding: 10px;
         border: 1px solid #ddd;
+        max-width: 300px; /* 🔥 Ajuste de ancho más angosto */
     }
-    
+
     /* Botón rojo */
     .stButton>button {
         background: #ce1f2d;
         color: white;
         font-weight: bold;
         border-radius: 8px;
-        padding: 14px 28px;
-        width: 100%;
+        padding: 12px 20px;
+        width: 50%;
         border: none;
         font-size: 1.1rem;
         transition: all 0.2s;
@@ -218,3 +226,4 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
