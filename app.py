@@ -96,12 +96,19 @@ header, footer {visibility: hidden; height: 0;}
 }
 
 /* Expander */
-.st-expanderHeader {
-    background: #ffffff !important; /* Fondo blanco */
-    color: #000000 !important;      /* Texto negro */
-    font-weight: bold;
+.st-expander {
+    border: 1px solid #000000 !important;
     border-radius: 5px !important;
-    border: 1px solid #000000;
+}
+
+.st-expanderHeader {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+.st-expanderContent {
+    background: #ffffff !important;
 }
 
 /* Formulario */
@@ -112,26 +119,56 @@ header, footer {visibility: hidden; height: 0;}
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
+/* Labels y títulos en negro */
 .stTextInput label,
 .stSelectbox label,
 .stMultiselect label,
-.stRadio label {
-    color: #000000 !important; /* ✅ Forzar títulos negros */
+.stRadio label,
+.stMarkdown h1,
+.stMarkdown h2,
+.stMarkdown h3,
+.stMarkdown h4,
+.stMarkdown h5,
+.stMarkdown h6,
+.stMarkdown p,
+.stMarkdown div {
+    color: #000000 !important;
     font-weight: bold;
-    margin-bottom: 4px;
 }
 
+/* Inputs y selects - negro sobre blanco */
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
 .stMultiselect>div>div>div {
     border-radius: 4px !important;
     padding: 6px 10px !important;
     border: 1px solid #888 !important;
-    width: 250px !important; /* 🔥 Campos más angostos */
+    width: 250px !important;
     color: #000000 !important;
     background: #ffffff !important;
 }
 
+/* Radio buttons en negro */
+.stRadio [role="radiogroup"] {
+    color: #000000 !important;
+}
+
+.stRadio [role="radiogroup"] label {
+    color: #000000 !important;
+}
+
+/* Multiselect items seleccionados */
+.stMultiSelect [role="button"] {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+.stMultiSelect [aria-selected="true"] {
+    background-color: #e6e6e6 !important;
+    color: #000000 !important;
+}
+
+/* Botón */
 .stButton>button {
     background: #000000 !important;
     color: #ffffff !important;
@@ -219,5 +256,4 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
 
