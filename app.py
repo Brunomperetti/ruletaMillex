@@ -2,7 +2,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
-import random
 
 # URL actualizada de tu Apps Script
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxg1j5w57os20mywlO0Kup-kqMxfnCuIeTbJBcSqJFGPizKVls1xp5WErH0K_yKypMQ/exec"
@@ -25,6 +24,19 @@ st.markdown("""
         text-shadow: 1px 1px 4px rgba(255,255,255,0.5);
         border-bottom: 1px solid #333;
     }
+    .ruleta-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+    }
+    iframe {
+        border: none;
+        border-radius: 12px;
+        width: 600px;
+        height: 600px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
     ::-webkit-scrollbar {
         display: none;
     }
@@ -42,19 +54,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Título
 st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_allow_html=True)
 
-# 🎡 Simulación de ruleta con probabilidades ajustadas
-def girar_ruleta():
-    premios = ["10off", "20off", "25off", "5off", "Seguí participando"]
-    probabilidades = [0.25, 0.18, 0.07, 0.40, 0.10]  # Ajustadas: 25% menos chances, 20% cambiado a 18%
-    resultado = random.choices(premios, weights=probabilidades, k=1)[0]
-    return resultado
-
-st.subheader("🎡 Girá la ruleta")
-if st.button("🎯 GIRAR"):
-    resultado = girar_ruleta()
-    st.success(f"🎉 ¡Ganaste: {resultado}!")
+# 🎡 Ruleta embebida centrada
+st.markdown('<div class="ruleta-container">', unsafe_allow_html=True)
+components.html("""
+    <iframe src="https://wheelofnames.com/es/aep-cej"></iframe>
+""", height=650, scrolling=False)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Formulario
 with st.expander("🎁 Cargar datos del ganador", expanded=False):
