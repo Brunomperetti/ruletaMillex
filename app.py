@@ -22,7 +22,6 @@ INTERESES = ["Perro", "Gato", "Roedores", "Aves", "Acuario"]
 
 CATEGORIAS_PRODUCTOS = [
     "ACCESORIOS DE LIMPIEZA", "ACCESORIOS DE PELUQUERIA IMPOR", "ACCESORIOS IMPOR. P/PAJAROS -A", "ACCESORIOS IMPORTADOS P/PAJARO", "ACCESORIOS PARA ROEDORES", "ACCESORIOS VARIOS ACUARIO", "ACCESORIOS VARIOS P/GATOS", "ACCESORIOS VARIOS P/PERROS", "ADORNOS CON MOVIMIENTO", "AIREADORES BOYU", "AIREADORES SHANDA", "ALICATE P/ PERROS Y GATOS", "ARBOLES P/GATO", "BEBEDEROS PARA HAMSTER", "BEBEDEROS PARA ROEDORES", "BEBEDERO P/PERRO", "BOMBAS", "BOMBAS PARA ACUARISMO", "BOZAL IMPORTADO TIPO CANASTA", "CALEFACTORES IMPORTADOS", "CANILES PLEGABLES DE METAL", "CARDINAS DE MADERA", "CARDINAS DE PLASTICO", "COLLARES DE AHORQUE CON PUAS", "COLLARES DE CUERO IMPORTADOS", "COLLARES DE NYLON IMPORTADOS", "COLLARES ELASTIZADOS P/GATOS", "COMEDEROS ACERO INOXIDABLE", "COMEDEROS AUTOMATICOS IMPORT.", "COMEDEROS DE PLASTICO IMPORTAD", "CONJUNTO ALPINISTA", "CONJUNTO NYLON HUESOS", "CONJ.CORREA-COLLAR 10MM", "CONJUNTOS CORREA PRETAL", "CORREA CORTA CON RESORTE", "CORREAS COLLARES PRETALES", "CORREAS DE NYLON IMPORTADOS", "CORREAS EXTENSIBLES", "CUCHAS PARA PERROS", "DESCANSO Y RELAX", "DIFUSORES DE AIRE", "ELEMENTOS DE FILTRACION", "EDUCATIVOS HIGIÉNICOS", "FILTRO EXTERNO BOTELLON", "FILTROS ELECT. INTERNO", "FILTROS ELECTRICOS REBALSE", "FLETES VARIOS", "GRAVAS Y PIEDRAS DECORATIVAS", "HERMIT CRABB ACCESORIOS", "HUESOS DE ALGODON", "JAULA COBAYOS/CONEJOS IMPORT.", "JAULA PARA LOROS", "JAULAS GRANDES DORADAS", "JAULAS GRANDES PINTADAS", "JAULAS MEDIANAS EPOXI IMPORT.", "JAULAS PARA GATOS", "JAULAS PARA HAMSTERS", "JUGUETES BEEZTEES", "JUGUETES CHUCKIT", "JUGUETES CON SOGA", "JUGUETES DE GOMA IMPORT.", "JUGUETES DE LATEX", "JUGUETES DOGZILLA", "JUGUETES GATOS CAT NIP", "JUGUETES GATOS PELOTAS", "JUGUETES GATOS RATITAS", "JUGUETES GATOS VARIOS", "JUGUETES JACKSON GALAXY", "JUGUETES JW", "JUGUETES PARA PERROS", "JUGUETES VINILICOS JUMBO", "LITERAS IMPORTADAS", "MINERALES ABSORBENTES", "MOISES PLASTICO PARA MASCOTAS", "NIDOS IMPORTADOS P/PAJAROS", "PARIDERAS", "PEINES", "PELOTA P-MASCOTAS", "PECERAS DE ACRILICO", "PLANTA PLASTICA EN SOBRE", "PORTANOMBRE COLGANTE", "PRETALES NYLON IMPORTADOS", "PRODAC ALIMENTOS VARIOS", "RASCADORES VARIOS", "REPU. PARA AIREADORES IMPO", "REPU. PARA FILTROS IMPORTA", "REPUESTOS BOMBAS DE AGUA", "REPUESTOS PARA JAULAS IMPORTAD", "RESINA IMPORTADOS", "STICKERS Y DISPLAYS", "TAPA PARA TERRARIOS", "TERMOMETROS", "TRANSPORTADORAS DAYANG", "TRANSPORTADORAS MP", "TUBOS DE ILUMINACION"
-
 ]
 
 # Estilos CSS personalizados
@@ -35,32 +34,28 @@ st.markdown("""
         overflow-x: hidden;
     }
     
-    /* Eliminar espacios no deseados */
     header, footer {visibility: hidden; height: 0;}
     .block-container {padding: 0; margin: 0; max-width: 100%;}
     .stApp {background: #f5f5f5; padding: 0 !important;}
     
-    /* Título rojo */
+    /* Título negro */
     .title-container {
-        background: #ce1f2d;
+        background: #f5f5f5;
         padding: 20px 0;
         text-align: center;
-        color: white;
+        color: #000000;
         font-family: 'Arial Black', sans-serif;
         font-size: 2.8rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         margin: 0;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
-    /* Contenedor principal */
     .main-container {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
     }
     
-    /* Ruleta centrada */
     .ruleta-container {
         display: flex;
         justify-content: center;
@@ -77,78 +72,57 @@ st.markdown("""
         border: none;
     }
     
-    /* Formulario desplegable pegado abajo */
-    .form-expander {
-        background: #ce1f2d;
-        color: #ce1f2d !important; /* Texto rojo */
-        border-radius: 0 !important;
-        margin-top: 0 !important;
-    }
-    .form-expander .st-emotion-cache-1hynsf2 {
-        background: #ce1f2d;
-        color: #ce1f2d !important; /* Texto rojo */
-    }
-    .form-expander .st-emotion-cache-1hynsf2 svg {
-        color: white !important;
-    }
-    .form-expander .st-emotion-cache-1hynsf2:hover {
-        background: #a71925 !important;
-    }
-
-    /* Texto del encabezado del desplegable en rojo */
+    /* Expander en negro */
     .st-expanderHeader {
-        color: #ce1f2d !important;
+        background: #000 !important;
+        color: #ffffff !important;
         font-weight: bold;
     }
-
+    
     .form-content {
         background: white;
-        padding: 25px;
+        padding: 20px;
         border-radius: 0 0 10px 10px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     
-    /* Campos del formulario */
+    /* Inputs angostos y letra negra */
     .stTextInput>div>div>input, 
     .stSelectbox>div>div>select,
     .stMultiselect>div>div>div {
         border-radius: 6px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        max-width: 300px; /* 🔥 Ajuste de ancho más angosto */
+        padding: 8px;
+        border: 1px solid #bbb;
+        max-width: 250px; /* 🔥 Más angosto */
+        color: #000000;
     }
 
-    /* Botón rojo */
+    .stTextInput label, .stSelectbox label, .stMultiselect label, .stRadio label {
+        color: #000000 !important;
+        font-weight: 500;
+    }
+
+    /* Botón negro */
     .stButton>button {
-        background: #ce1f2d;
+        background: #000000;
         color: white;
         font-weight: bold;
-        border-radius: 8px;
-        padding: 12px 20px;
-        width: 50%;
+        border-radius: 6px;
+        padding: 10px 15px;
+        width: 40%;
         border: none;
-        font-size: 1.1rem;
-        transition: all 0.2s;
-        margin-top: 20px;
+        font-size: 1rem;
+        margin-top: 10px;
     }
     
     .stButton>button:hover {
-        background: #a71925;
+        background: #333333;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(206, 31, 45, 0.3);
     }
-    
-    /* Radio buttons */
+
     .stRadio>div {
         flex-direction: row;
-        gap: 20px;
-    }
-    
-    /* Textos en rojo */
-    .stMarkdown p, .stMarkdown label, .stTextInput label, .stSelectbox label, 
-    .stMultiselect label, .stRadio label {
-        color: #ce1f2d !important;
-        font-weight: 500;
+        gap: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -226,5 +200,6 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
