@@ -53,28 +53,15 @@ CATEGORIAS_PRODUCTOS = [
     "TUBOS DE ILUMINACION"
 ]
 
-# Estilos CSS personalizados
-st.markdown("""
-<style>
-.title-container {
-    background: #ffffff;
-    padding: 15px;
-    text-align: center;
-    color: #000000 !important;
-    font-family: 'Arial Black', sans-serif;
-    font-size: 2.5rem;
-    border-bottom: 2px solid #000000;
-}
-</style>
-""", unsafe_allow_html=True)
-
 # Título
-st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_allow_html=True)
+st.markdown('<h1 style="text-align:center;">🎯 RULETA MÁGICA MILLEX 🎯</h1>', unsafe_allow_html=True)
 
-# Ruleta
-components.html("""
-<iframe src="https://wheelofnames.com/es/vug-z3k" width="600" height="600" style="border:none;"></iframe>
-""", height=650)
+# Ruleta centrada
+st.markdown("""
+<div style="display:flex; justify-content:center; align-items:center;">
+    <iframe src="https://wheelofnames.com/es/vug-z3k" width="600" height="600" style="border:none;"></iframe>
+</div>
+""", unsafe_allow_html=True)
 
 # Formulario
 with st.expander("🎁 CARGAR DATOS DEL GANADOR", expanded=False):
@@ -114,16 +101,23 @@ with st.expander("🎁 CARGAR DATOS DEL GANADOR", expanded=False):
 
             try:
                 headers = {'Content-Type': 'application/json'}
-                response = requests.post(WEB_APP_URL, json=datos, headers=headers)
-                response.raise_for_status()
+                respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
+                respuesta.raise_for_status()
 
-                resp_json = response.json()
-                if resp_json.get("status") in ["success", "ok"]:
-                    st.success("✅ Datos guardados correctamente")
-                else:
-                    st.error(f"❌ Error: {resp_json.get('message', 'Error desconocido')}")
-            except Exception as e:
-                st.error(f"❌ Error al conectar: {e}")
+                try:
+                    respuesta_json = respuesta.json()
+                    if respuesta_json.get("status") in ["success", "ok"]:
+                        mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
+                        whatsapp_limpio = whatsapp.strip().replace(" ", "").replace("-", "")
+                        link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
+                        st.success("✅ Datos guardados correctamente!")
+                        st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
+                    else:
+                        st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
+                except ValueError:
+                    st.error("❌ La respuesta no es JSON válido.")
+            except requests.exceptions.RequestException as e:
+                st.error(f"❌ Error de conexión: {str(e)}")
 
 
 
