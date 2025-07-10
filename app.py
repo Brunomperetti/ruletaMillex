@@ -7,7 +7,7 @@ import requests
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEPDyzQsLuB26d3JQSb60I8xu7tYfI7lZbUnMhNarA0Dh8odExRAPOWzknhCiaG6ES/exec"
 
 # Configuración de la página
-st.set_page_config(page_title="Ruleta Mágica Millex", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Ruleta Mágica Millex", layout="centered", initial_sidebar_state="collapsed")
 
 # Listas de opciones
 PROVINCIAS_ARGENTINA = [
@@ -56,17 +56,17 @@ CATEGORIAS_PRODUCTOS = [
 ]
 
 # Título
-st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: center; font-size: 40px; font-weight: bold;">🎡 RULETA MÁGICA MILLEX 🎡</div>', unsafe_allow_html=True)
 
 # Ruleta centrada
 st.markdown("""
-<div class="ruleta-container">
-    <iframe class="ruleta-frame" src="https://wheelofnames.com/es/vug-z3k"></iframe>
+<div style="display: flex; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 40px;">
+    <iframe src="https://wheelofnames.com/es/vug-z3k" width="500" height="500" style="border: none;"></iframe>
 </div>
 """, unsafe_allow_html=True)
 
 # Formulario
-with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
+with st.expander("📋 CARGAR DATOS DEL GANADOR", expanded=False):
     with st.form("formulario", clear_on_submit=True):
         col1, col2 = st.columns(2)
         
@@ -85,12 +85,12 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
             tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
             provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
             interes_principal = st.multiselect("Interés principal", INTERESES)
-            categorias_productos = st.multiselect("Categorías de productos*", CATEGORIAS_PRODUCTOS)  # ✅ CAMBIO: ahora es multiselect
+            categorias_productos = st.multiselect("Categorías de productos*", CATEGORIAS_PRODUCTOS)  # ✅ MULTISELECT
             marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
             premio = st.selectbox("Premio ganado*", ["10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
             vendedor = st.selectbox("Vendedor*", VENDEDORES)
         
-        enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
+        enviar = st.form_submit_button("✅ ENVIAR Y GUARDAR DATOS")
 
         if enviar:
             datos = {
@@ -106,7 +106,7 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                 "tipoCliente": tipo_cliente,
                 "provincia": provincia,
                 "interes": ", ".join(interes_principal),
-                "categoriaProductos": ", ".join(categorias_productos),  # ✅ Ahora envía correctamente
+                "categoriaProductos": ", ".join(categorias_productos),
                 "marcas": ", ".join(marcas),
                 "premio": premio,
                 "vendedor": vendedor
