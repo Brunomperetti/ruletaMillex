@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
@@ -53,177 +53,65 @@ CATEGORIAS_PRODUCTOS = [
     "TUBOS DE ILUMINACION"
 ]
 
-# Estilos CSS personalizados
+# Estilos CSS
 st.markdown("""
 <style>
-/* Ajustes generales */
-html, body, [class*="css"] {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    font-family: Arial, sans-serif !important;
-    color: #000000 !important; /* Letras generales negras */
-}
-
-header, footer {visibility: hidden; height: 0;}
-.block-container {padding: 0; margin: 0 auto; max-width: 900px;}
-.stApp {background: #f5f5f5; padding: 0 !important;}
-
-/* Título */
-.title-container {
-    background: #ffffff;
-    padding: 15px;
-    text-align: center;
-    color: #000000 !important;
-    font-family: 'Arial Black', sans-serif;
-    font-size: 2.5rem;
-    border-bottom: 2px solid #000000;
-}
-
-/* Ruleta */
-.ruleta-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #000000;
-    height: 60vh;
-}
-
-.ruleta-frame {
-    width: 600px;
-    height: 600px;
-    border: none;
-}
-
-/* Formulario */
-.st-expanderHeader {
-    background: #ffffff !important;
-    color: #000000 !important; /* 🔥 Encabezado negro */
-    font-weight: bold;
-    border-radius: 5px !important;
-}
-
-.form-content {
-    background: #ffffff;
-    color: #000000 !important;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
-/* Labels en negro */
-label, .stRadio>div>div>label {
-    color: #000000 !important;
-}
-
-/* Inputs */
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
 .stMultiselect>div>div>div {
-    color: #ffffff !important; /* Texto blanco en inputs */
-    background: #1e1e1e !important; /* Fondo oscuro */
-}
-
-.stTextInput input::placeholder {
-    color: #cccccc !important; /* Placeholder gris claro */
-}
-
-.stButton>button {
-    background: #000000 !important;
     color: #ffffff !important;
-    border-radius: 4px;
-    padding: 8px 15px;
-    font-size: 1rem;
-}
-
-.stButton>button:hover {
-    background: #333333 !important;
+    background: #1e1e1e !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Estructura principal
-st.markdown("""
-<div class="main-container">
-    <div class="title-container">RULETA MÁGICA MILLEX</div>
-    <div class="ruleta-container">
-        <iframe class="ruleta-frame" src="https://wheelofnames.com/es/vug-z3k"></iframe>
-    </div>
-""", unsafe_allow_html=True)
-
-# Formulario desplegable
+# Formulario
 with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
-    st.markdown('<div class="form-content">', unsafe_allow_html=True)
-    
     with st.form("formulario", clear_on_submit=True):
         col1, col2 = st.columns(2)
-        
         with col1:
             nombre = st.text_input("Nombre y apellido*")
             razon = st.text_input("Razón social*")
             fantasia = st.text_input("Nombre de fantasía")
-            cuil_cuit = st.text_input("Número de CUIL o CUIT")
+            cuil_cuit = st.text_input("CUIL/CUIT")
             whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...")
             cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
-            estrella = st.checkbox("⭐ Marcar como cliente estrella")
-            
+            estrella = st.checkbox("⭐ Cliente estrella")
         with col2:
             tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
             provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
             interes = st.multiselect("Interés principal", INTERESES)
-        
-        categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS)
-        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
-        premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
-        
+            categorias = st.multiselect("Categorías de productos", CATEGORIAS_PRODUCTOS)
+            marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+            premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
-        
+
         if enviar:
             if nombre and razon and whatsapp and premio and provincia:
                 datos = {
-                    "nombre": nombre,
-                    "razonSocial": razon,
-                    "nombreFantasia": fantasia,
-                    "cuilCuit": cuil_cuit,
-                    "whatsapp": whatsapp,
-                    "clienteTipo": cliente_tipo,
-                    "clienteEstrella": estrella,
-                    "tipoCliente": tipo_cliente,
-                    "provincia": provincia,
-                    "interes": ", ".join(interes) if interes else "",
-                    "categoriaProductos": ", ".join(categoria_productos) if categoria_productos else "",
-                    "marcas": ", ".join(marcas) if marcas else "",
-                    "premio": premio
+                    "Nombre_y_Apellido": nombre,
+                    "Razon_Social": razon,
+                    "Nombre_Fantasia": fantasia,
+                    "CUIL_CUIT": cuil_cuit,
+                    "Whatsapp": whatsapp,
+                    "Cliente_Tipo": cliente_tipo,
+                    "Tipo_Cliente": tipo_cliente,
+                    "Provincia": provincia,
+                    "Interes_Principal": ", ".join(interes),
+                    "Categorias_Productos": ", ".join(categorias),
+                    "Marcas": ", ".join(marcas),
+                    "Premio_Ganado": premio,
+                    "Cliente_Estrella": "Sí" if estrella else "No"
                 }
-                
+
                 try:
-                    headers = {'Content-Type': 'application/json'}
-                    respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
-                    respuesta.raise_for_status()
-                    
-                    try:
-                        respuesta_json = respuesta.json()
-                        if respuesta_json.get("status") in ["success", "ok"]:
-                            mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
-                            whatsapp_limpio = whatsapp.strip().replace(" ", "").replace("-", "")
-                            link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
-                            st.success("✅ Datos guardados correctamente!")
-                            st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
-                        else:
-                            st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
-                    except ValueError:
-                        st.error("❌ La respuesta no es JSON válido.")
-                except requests.exceptions.RequestException as e:
-                    st.error(f"❌ Error de conexión: {str(e)}")
+                    response = requests.post(WEB_APP_URL, json=datos)
+                    response.raise_for_status()
+                    st.success("✅ Datos guardados correctamente.")
+                except Exception as e:
+                    st.error(f"❌ Error al enviar los datos: {e}")
             else:
                 st.warning("⚠️ Por favor completa todos los campos obligatorios (*)")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-# --- FIN DEL CÓDIGO ---
-
 
 
 
