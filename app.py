@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
-from datetime import datetime  # Esta es la importación que faltaba
+from datetime import datetime
 
 # URL de tu Apps Script
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxg1j5w57os20mywlO0Kup-kqMxfnCuIeTbJBcSqJFGPizKVls1xp5WErH0K_yKypMQ/exec"
@@ -141,46 +141,63 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-import streamlit as st 
-import streamlit.components.v1 as components
-import urllib.parse
-import requests
-from datetime import datetime
-
-# [Todo el código de configuración previo permanece igual...]
-
 # Formulario desplegable
 with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('<div class="form-content">', unsafe_allow_html=True)
     
     with st.form("formulario", clear_on_submit=True):
-        # [Todo el código del formulario permanece igual hasta el final...]
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            nombre = st.text_input("Nombre y apellido*")
+            razon = st.text_input("Razón social*")
+            fantasia = st.text_input("Nombre de fantasía")
+            cuil_cuit = st.text_input("Número de CUIL o CUIT")
+            whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...")
+            cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
+            estrella = st.checkbox("⭐ Marcar como cliente estrella")
+            
+        with col2:
+            tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
+            provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
+            interes = st.multiselect("Interés principal", INTERESES)
+        
+        categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS)
+        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+        premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
+        
+        enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
         
         if enviar:
             if nombre and razon and whatsapp and premio and provincia:
                 fecha_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                 
-                params = {
-                    "nombre": nombre,
-                    "razon_social": razon,
-                    "nombre_fantasia": fantasia or "",
-                    "cuil_cuit": cuil_cuit or "",
-                    "whatsapp": whatsapp,
-                    "cliente_tipo": cliente_tipo,
-                    "cliente_estrella": "Sí" if estrella else "No",
-                    "tipo_cliente": tipo_cliente,
-                    "provincia": provincia,
-                    "interes_principal": ",".join(interes) if interes else "",
-                    "categorias_productos": ",".join(categoria_productos) if categoria_productos else "",
-                    "marcas": ",".join(marcas) if marcas else "",
-                    "premio_ganado": premio,
-                    "fecha_hora": fecha_hora
+                # Preparar datos para enviar como JSON
+                datos = {
+                    "action": "guardar_datos",
+                    "data": {
+                        "Nombre y Apellido": nombre,
+                        "Razon Social": razon,
+                        "Nombre Fantasía": fantasia or "",
+                        "CUIL/CUIT": cuil_cuit or "",
+                        "whatsapp": whatsapp,
+                        "Cliente Tipo": cliente_tipo,
+                        "Cliente Estrella": "Sí" if estrella else "No",
+                        "Tipo Cliente": tipo_cliente,
+                        "Provincia": provincia,
+                        "Interés Principal": ", ".join(interes) if interes else "",
+                        "Categorías Productos": ", ".join(categoria_productos) if categoria_productos else "",
+                        "Marcas": ", ".join(marcas) if marcas else "",
+                        "premio ganado": premio,
+                        "Fecha y hora": fecha_hora
+                    }
                 }
                 
                 try:
-                    response = requests.get(WEB_APP_URL, params=params)
+                    headers = {'Content-Type': 'application/json'}
+                    respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
                     
-                    if response.status_code == 200:
+                    if respuesta.status_code == 200:
                         st.success("✅ Datos guardados correctamente!")
                         if premio != "Seguí participando":
                             mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
@@ -188,7 +205,7 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                             link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
                             st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
                     else:
-                        st.error(f"❌ Error al guardar: {response.text}")
+                        st.error(f"❌ Error al guardar: {respuesta.text}")
                 except Exception as e:
                     st.error(f"❌ Error de conexión: {str(e)}")
             else:
