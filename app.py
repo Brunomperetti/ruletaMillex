@@ -4,7 +4,7 @@ import urllib.parse
 import requests
 
 # URL actualizada de tu Apps Script
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxTX0rNV7sXquRIS1Q_Pc7ZsRkiQpTHzMfHWb5ROf3muJGGBnY_J2juYEqNGJw4CC2x/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyV5N31S-1hKWsx9IQNgJBXDZ9mTylHNhUIScocdRIGBTUvCEZpgYx3ItXAxwqUxgnW/exec"
 
 # Configuración de la página
 st.set_page_config(page_title="Ruleta Mágica Millex", layout="wide", initial_sidebar_state="collapsed")
@@ -51,52 +51,106 @@ CATEGORIAS_PRODUCTOS = [
     "REPUESTOS PARA JAULAS IMPORTAD", "RESINA IMPORTADOS", "STICKERS Y DISPLAYS",
     "TAPA PARA TERRARIOS", "TERMOMETROS", "TRANSPORTADORAS DAYANG", "TRANSPORTADORAS MP",
     "TUBOS DE ILUMINACION"
+
 ]
 
+# Estilos CSS personalizados
+st.markdown("""
+<style>
+/* Ajustes generales */
+html, body, [class*="css"] {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif !important;
+    color: #000000 !important; /* Letras generales negras */
+}
+
+header, footer {visibility: hidden; height: 0;}
+.block-container {padding: 0; margin: 0 auto; max-width: 900px;}
+.stApp {background: #f5f5f5; padding: 0 !important;}
+
+/* Título */
+.title-container {
+    background: #ffffff;
+    padding: 15px;
+    text-align: center;
+    color: #000000 !important;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 2.5rem;
+    border-bottom: 2px solid #000000;
+}
+
+/* Ruleta */
+.ruleta-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000000;
+    height: 60vh;
+}
+
+.ruleta-frame {
+    width: 600px;
+    height: 600px;
+    border: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Título
-st.markdown('<h1 style="text-align:center;">🎯 RULETA MÁGICA MILLEX 🎯</h1>', unsafe_allow_html=True)
+st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_allow_html=True)
 
 # Ruleta centrada
 st.markdown("""
-<div style="display:flex; justify-content:center; align-items:center;">
-    <iframe src="https://wheelofnames.com/es/vug-z3k" width="600" height="600" style="border:none;"></iframe>
+<div class="ruleta-container">
+    <iframe class="ruleta-frame" src="https://wheelofnames.com/es/vug-z3k"></iframe>
 </div>
 """, unsafe_allow_html=True)
 
-# Formulario
-with st.expander("🎁 CARGAR DATOS DEL GANADOR", expanded=False):
+# Formulario desplegable
+with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     with st.form("formulario", clear_on_submit=True):
-        nombre = st.text_input("Nombre y apellido")
-        razon_social = st.text_input("Razón social")
-        nombre_fantasia = st.text_input("Nombre de fantasía")
-        cuil_cuit = st.text_input("Número de CUIL o CUIT")
-        whatsapp = st.text_input("WhatsApp (con código país)", placeholder="+549...")
-        cliente_tipo = st.radio("¿Es cliente nuevo o actual?", ["Nuevo", "Actual"])
-        cliente_estrella = st.radio("¿Es cliente estrella?", ["Sí", "No"])
-        tipo_cliente = st.selectbox("Tipo de cliente", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
-        provincia = st.selectbox("Provincia", PROVINCIAS_ARGENTINA)
-        interes_principal = st.multiselect("Interés principal", INTERESES)
-        categorias_productos = st.multiselect("Categorías de productos", CATEGORIAS_PRODUCTOS)
-        marcas = st.multiselect("Interes en Marcas", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "DePets", "Bergamo", "Otros"])
-        premio = st.selectbox("Premio ganado", ["10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
-
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            nombre = st.text_input("Nombre y apellido")
+            razon_social = st.text_input("Razón social")
+            nombre_fantasia = st.text_input("Nombre de fantasía")
+            cuil_cuit = st.text_input("Número de CUIL o CUIT")
+            whatsapp = st.text_input("WhatsApp (con código país)", placeholder="+549...")
+            email = st.text_input("Email")
+            direccion = st.text_input("Dirección")
+            cliente_tipo = st.radio("¿Es cliente nuevo o actual?", ["Nuevo", "Actual"])
+            cliente_estrella = st.checkbox("⭐ Marcar como cliente estrella")
+            
+        with col2:
+            tipo_cliente = st.selectbox("Tipo de cliente", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
+            provincia = st.selectbox("Provincia", PROVINCIAS_ARGENTINA)
+            interes_principal = st.multiselect("Interés principal", INTERESES)
+            categorias_productos = st.multiselect("Categorías de productos", CATEGORIAS_PRODUCTOS)
+            marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+            premio = st.selectbox("Premio ganado", ["10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
+        
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
 
         if enviar:
             datos = {
-                "Nombre y Apellido": nombre,
-                "Razon Social": razon_social,
-                "Nombre Fantasía": nombre_fantasia,
-                "CUIL/CUIT": cuil_cuit,
+                "nombre": nombre,
+                "razonSocial": razon_social,
+                "nombreFantasia": nombre_fantasia,
+                "cuilCuit": cuil_cuit,
                 "whatsapp": whatsapp,
-                "Cliente Tipo": cliente_tipo,
-                "Cliente Estrella": cliente_estrella,
-                "Tipo Cliente": tipo_cliente,
-                "Provincia": provincia,
-                "Interés Principal": ", ".join(interes_principal),
-                "Categorías Productos": ", ".join(categorias_productos),
-                "Marcas": ", ".join(marcas),
-                "premio ganado": premio
+                "email": email,
+                "direccion": direccion,
+                "clienteTipo": cliente_tipo,
+                "clienteEstrella": cliente_estrella,
+                "tipoCliente": tipo_cliente,
+                "provincia": provincia,
+                "interes": ", ".join(interes_principal),
+                "categoriaProductos": ", ".join(categorias_productos),
+                "marcas": ", ".join(marcas),
+                "premio": premio
             }
 
             try:
@@ -104,18 +158,15 @@ with st.expander("🎁 CARGAR DATOS DEL GANADOR", expanded=False):
                 respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
                 respuesta.raise_for_status()
 
-                try:
-                    respuesta_json = respuesta.json()
-                    if respuesta_json.get("status") in ["success", "ok"]:
-                        mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
-                        whatsapp_limpio = whatsapp.strip().replace(" ", "").replace("-", "")
-                        link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
-                        st.success("✅ Datos guardados correctamente!")
-                        st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
-                    else:
-                        st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
-                except ValueError:
-                    st.error("❌ La respuesta no es JSON válido.")
+                respuesta_json = respuesta.json()
+                if respuesta_json.get("status") in ["success", "ok"]:
+                    mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
+                    whatsapp_limpio = whatsapp.strip().replace(" ", "").replace("-", "")
+                    link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
+                    st.success("✅ Datos guardados correctamente!")
+                    st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
+                else:
+                    st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
             except requests.exceptions.RequestException as e:
                 st.error(f"❌ Error de conexión: {str(e)}")
 
