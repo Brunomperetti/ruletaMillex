@@ -176,27 +176,24 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
         marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
         premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
         
-# ... todo igual hasta llegar al envío ...
-
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
         
         if enviar:
             if nombre and razon and whatsapp and premio and provincia:
-                # 🔥 Cambiado para respetar el orden del Excel
                 datos = {
-                    "Nombre_y_Apellido": nombre,
-                    "Razon_Social": razon,
-                    "Nombre_Fantasia": fantasia,
-                    "CUIL_CUIT": cuil_cuit,
-                    "Whatsapp": whatsapp,
-                    "Cliente_Tipo": cliente_tipo,
-                    "Tipo_Cliente": tipo_cliente,
-                    "Provincia": provincia,
-                    "Interes_Principal": ", ".join(interes) if interes else "",
-                    "Categorias_Productos": ", ".join(categoria_productos) if categoria_productos else "",
-                    "Marcas": ", ".join(marcas) if marcas else "",
-                    "Premio_Ganado": premio,
-                    "Cliente_Estrella": "SI" if estrella else "NO"  # ⭐ Marcar como SI o NO
+                    "nombre": nombre,
+                    "razonSocial": razon,
+                    "nombreFantasia": fantasia,
+                    "cuilCuit": cuil_cuit,
+                    "whatsapp": whatsapp,
+                    "clienteTipo": cliente_tipo,
+                    "clienteEstrella": estrella,
+                    "tipoCliente": tipo_cliente,
+                    "provincia": provincia,
+                    "interes": ", ".join(interes) if interes else "",
+                    "categoriaProductos": ", ".join(categoria_productos) if categoria_productos else "",
+                    "marcas": ", ".join(marcas) if marcas else "",
+                    "premio": premio
                 }
                 
                 try:
@@ -213,14 +210,13 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                             st.success("✅ Datos guardados correctamente!")
                             st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
                         else:
-                            st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")                        
+                            st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
                     except ValueError:
                         st.error("❌ La respuesta no es JSON válido.")
                 except requests.exceptions.RequestException as e:
                     st.error(f"❌ Error de conexión: {str(e)}")
             else:
                 st.warning("⚠️ Por favor completa todos los campos obligatorios (*)")
-
     
     st.markdown('</div>', unsafe_allow_html=True)
 
