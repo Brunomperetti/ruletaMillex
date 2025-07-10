@@ -77,7 +77,7 @@ with st.expander("🎁 CARGAR DATOS DEL GANADOR", expanded=False):
         provincia = st.selectbox("Provincia", PROVINCIAS_ARGENTINA)
         interes_principal = st.multiselect("Interés principal", INTERESES)
         categorias_productos = st.multiselect("Categorías de productos", CATEGORIAS_PRODUCTOS)
-        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "DePets", "Bergamo", "Otros"])
         premio = st.selectbox("Premio ganado", ["10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
 
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
