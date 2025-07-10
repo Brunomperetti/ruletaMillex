@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
@@ -105,6 +105,7 @@ header, footer {visibility: hidden; height: 0;}
 
 .form-content {
     background: #ffffff;
+    color: #000000 !important; /* 🔥 Letras negras en formulario */
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -112,13 +113,9 @@ header, footer {visibility: hidden; height: 0;}
 
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
-.stMultiselect>div>div>div {
-    border-radius: 4px !important;
-    padding: 6px 10px !important;
-    border: 1px solid #888 !important;
-    width: 250px !important; /* 🔥 Campos más angostos */
-    color: #000000 !important;
-    background: #ffffff !important;
+.stMultiselect>div>div>div,
+.stRadio>div>div>label {
+    color: #000000 !important; /* 🔥 Letras negras en campos */
 }
 
 .stButton>button {
@@ -209,4 +206,4 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- FIN DEL CÓDIGO ---
+# --- FIN DEL CÓDIGO --- 
