@@ -7,7 +7,7 @@ import requests
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEPDyzQsLuB26d3JQSb60I8xu7tYfI7lZbUnMhNarA0Dh8odExRAPOWzknhCiaG6ES/exec"
 
 # Configuración de la página
-st.set_page_config(page_title="Ruleta Millex", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Ruleta Mágica Millex", layout="centered", initial_sidebar_state="collapsed")
 
 # Listas de opciones
 PROVINCIAS_ARGENTINA = [
@@ -58,12 +58,27 @@ CATEGORIAS_PRODUCTOS = [
 # Título
 st.markdown('<div style="text-align: center; font-size: 40px; font-weight: bold;">🎡 RULETA MÁGICA MILLEX 🎡</div>', unsafe_allow_html=True)
 
-# Ruleta centrada
-st.markdown("""
-<div style="display: flex; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 40px;">
-    <iframe src="https://wheelofnames.com/es/vug-z3k" width="500" height="500" style="border: none;"></iframe>
-</div>
-""", unsafe_allow_html=True)
+# Botón para abrir la ruleta en pantalla completa
+st.markdown(
+    """
+    <div style="text-align: center; margin: 20px;">
+        <a href="https://wheelofnames.com/es/vug-z3k" target="_blank">
+            <button style="
+                background-color: #000000;
+                color: #ffffff;
+                border: none;
+                border-radius: 8px;
+                padding: 15px 30px;
+                font-size: 20px;
+                cursor: pointer;
+            ">
+            🎯 GIRAR LA RULETA
+            </button>
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Formulario
 with st.expander("📋 CARGAR DATOS DEL GANADOR", expanded=False):
