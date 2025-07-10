@@ -7,7 +7,7 @@ import requests
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEPDyzQsLuB26d3JQSb60I8xu7tYfI7lZbUnMhNarA0Dh8odExRAPOWzknhCiaG6ES/exec"
 
 # Configuración de la página
-st.set_page_config(page_title="Ruleta Mágica Millex", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Ruleta Millex", layout="centered", initial_sidebar_state="collapsed")
 
 # Listas de opciones
 PROVINCIAS_ARGENTINA = [
