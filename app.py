@@ -4,7 +4,7 @@ import urllib.parse
 import requests
 
 # URL actualizada de tu Apps Script
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyV5N31S-1hKWsx9IQNgJBXDZ9mTylHNhUIScocdRIGBTUvCEZpgYx3ItXAxwqUxgnW/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEPDyzQsLuB26d3JQSb60I8xu7tYfI7lZbUnMhNarA0Dh8odExRAPOWzknhCiaG6ES/exec"
 
 # Configuración de la página
 st.set_page_config(page_title="Ruleta Mágica Millex", layout="wide", initial_sidebar_state="collapsed")
@@ -17,8 +17,6 @@ PROVINCIAS_ARGENTINA = [
     "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe", 
     "Santiago del Estero", "Tierra del Fuego", "Tucumán"
 ]
-
-INTERESES = ["Perro", "Gato", "Roedores", "Aves", "Acuario"]
 
 CATEGORIAS_PRODUCTOS = [
     "ACCESORIOS DE LIMPIEZA", "ACCESORIOS DE PELUQUERIA IMPOR", "ACCESORIOS IMPOR. P/PAJAROS -A",
@@ -54,23 +52,25 @@ CATEGORIAS_PRODUCTOS = [
 
 ]
 
-# Estilos CSS personalizados
+INTERESES = ["Perro", "Gato", "Roedores", "Aves", "Acuario"]
+
+VENDEDORES = ["Yerson", "Naza", "Eduardo", "Camila", "Axel"]
+
+# Estilos CSS
 st.markdown("""
 <style>
-/* Ajustes generales */
 html, body, [class*="css"] {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
     font-family: Arial, sans-serif !important;
-    color: #000000 !important; /* Letras generales negras */
+    color: #000000 !important;
 }
 
 header, footer {visibility: hidden; height: 0;}
 .block-container {padding: 0; margin: 0 auto; max-width: 900px;}
 .stApp {background: #f5f5f5; padding: 0 !important;}
 
-/* Título */
 .title-container {
     background: #ffffff;
     padding: 15px;
@@ -81,7 +81,6 @@ header, footer {visibility: hidden; height: 0;}
     border-bottom: 2px solid #000000;
 }
 
-/* Ruleta */
 .ruleta-container {
     display: flex;
     justify-content: center;
@@ -108,29 +107,30 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Formulario desplegable
+# Formulario
 with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     with st.form("formulario", clear_on_submit=True):
         col1, col2 = st.columns(2)
         
         with col1:
-            nombre = st.text_input("Nombre y apellido")
-            razon_social = st.text_input("Razón social")
+            nombre = st.text_input("Nombre y apellido*")
+            razon_social = st.text_input("Razón social*")
             nombre_fantasia = st.text_input("Nombre de fantasía")
             cuil_cuit = st.text_input("Número de CUIL o CUIT")
-            whatsapp = st.text_input("WhatsApp (con código país)", placeholder="+549...")
-            email = st.text_input("Email")
-            direccion = st.text_input("Dirección")
-            cliente_tipo = st.radio("¿Es cliente nuevo o actual?", ["Nuevo", "Actual"])
+            whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...")
+            email = st.text_input("Email*")
+            direccion = st.text_input("Dirección*")
+            cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
             cliente_estrella = st.checkbox("⭐ Marcar como cliente estrella")
             
         with col2:
-            tipo_cliente = st.selectbox("Tipo de cliente", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
-            provincia = st.selectbox("Provincia", PROVINCIAS_ARGENTINA)
+            tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
+            provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
             interes_principal = st.multiselect("Interés principal", INTERESES)
-            categorias_productos = st.multiselect("Categorías de productos", CATEGORIAS_PRODUCTOS)
+            categorias_productos = st.text_area("Categorías de productos")
             marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
-            premio = st.selectbox("Premio ganado", ["10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
+            premio = st.selectbox("Premio ganado*", ["10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
+            vendedor = st.selectbox("Vendedor*", VENDEDORES)  # ✅ NUEVO: campo vendedor
         
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
 
@@ -148,9 +148,10 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                 "tipoCliente": tipo_cliente,
                 "provincia": provincia,
                 "interes": ", ".join(interes_principal),
-                "categoriaProductos": ", ".join(categorias_productos),
+                "categoriaProductos": categorias_productos,
                 "marcas": ", ".join(marcas),
-                "premio": premio
+                "premio": premio,
+                "vendedor": vendedor  # ✅ ENVÍA vendedor
             }
 
             try:
@@ -169,7 +170,6 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                     st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
             except requests.exceptions.RequestException as e:
                 st.error(f"❌ Error de conexión: {str(e)}")
-
 
 
 
