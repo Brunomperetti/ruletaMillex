@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
+from datetime import datetime
 
 # URL actualizada de tu Apps Script
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxg1j5w57os20mywlO0Kup-kqMxfnCuIeTbJBcSqJFGPizKVls1xp5WErH0K_yKypMQ/exec"
@@ -180,25 +181,30 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
         
         if enviar:
             if nombre and razon and whatsapp and premio and provincia:
-                datos = {
-                    "nombre": nombre,
-                    "razonSocial": razon,
-                    "nombreFantasia": fantasia,
-                    "cuilCuit": cuil_cuit,
+                # Obtener fecha y hora actual
+                fecha_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                
+                # Ordenar los datos según el orden de las columnas en tu Sheet
+                datos_ordenados = {
+                    "Nombre y Apellido": nombre,
+                    "Razon Social": razon,
+                    "Nombre Fantasía": fantasia,
+                    "CUIL/CUIT": cuil_cuit,
                     "whatsapp": whatsapp,
-                    "clienteTipo": cliente_tipo,
-                    "clienteEstrella": estrella,
-                    "tipoCliente": tipo_cliente,
-                    "provincia": provincia,
-                    "interes": ", ".join(interes) if interes else "",
-                    "categoriaProductos": ", ".join(categoria_productos) if categoria_productos else "",
-                    "marcas": ", ".join(marcas) if marcas else "",
-                    "premio": premio
+                    "Cliente Tipo": cliente_tipo,
+                    "Cliente Estrella": "Sí" if estrella else "No",
+                    "Tipo Cliente": tipo_cliente,
+                    "Provincia": provincia,
+                    "Interés Principal": ", ".join(interes) if interes else "",
+                    "Categorías Productos": ", ".join(categoria_productos) if categoria_productos else "",
+                    "Marcas": ", ".join(marcas) if marcas else "",
+                    "premio ganado": premio,
+                    "Fecha y hora": fecha_hora
                 }
                 
                 try:
                     headers = {'Content-Type': 'application/json'}
-                    respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
+                    respuesta = requests.post(WEB_APP_URL, json=datos_ordenados, headers=headers)
                     respuesta.raise_for_status()
                     
                     try:
@@ -223,7 +229,5 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
 st.markdown('</div>', unsafe_allow_html=True)
 
 # --- FIN DEL CÓDIGO ---
-
-
 
 
