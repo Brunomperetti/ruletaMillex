@@ -101,7 +101,7 @@ with st.expander("📋 CARGAR DATOS DEL GANADOR", expanded=False):
             provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
             interes_principal = st.multiselect("Interés principal", INTERESES)
             categorias_productos = st.multiselect("Categorías de productos*", CATEGORIAS_PRODUCTOS)  # ✅ MULTISELECT
-            marcas = st.multiselect("Interes de Marcas", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+            marcas = st.multiselect("Interes de Marcas", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Raintech", "The Pets", "Otros"])
             premio = st.selectbox("Premio ganado*", ["10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
             vendedor = st.selectbox("Vendedor*", VENDEDORES)
         
