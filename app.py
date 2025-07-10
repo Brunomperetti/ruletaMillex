@@ -1,8 +1,7 @@
-import streamlit as st
+import streamlit as st 
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
-from datetime import datetime
 
 # URL actualizada de tu Apps Script
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxg1j5w57os20mywlO0Kup-kqMxfnCuIeTbJBcSqJFGPizKVls1xp5WErH0K_yKypMQ/exec"
@@ -54,7 +53,7 @@ CATEGORIAS_PRODUCTOS = [
     "TUBOS DE ILUMINACION"
 ]
 
-# Estilos CSS personalizados (igual que antes)
+# Estilos CSS personalizados
 st.markdown("""
 <style>
 /* Ajustes generales */
@@ -65,9 +64,11 @@ html, body, [class*="css"] {
     font-family: Arial, sans-serif !important;
     color: #000000 !important; /* Letras generales negras */
 }
+
 header, footer {visibility: hidden; height: 0;}
 .block-container {padding: 0; margin: 0 auto; max-width: 900px;}
 .stApp {background: #f5f5f5; padding: 0 !important;}
+
 /* Título */
 .title-container {
     background: #ffffff;
@@ -78,6 +79,7 @@ header, footer {visibility: hidden; height: 0;}
     font-size: 2.5rem;
     border-bottom: 2px solid #000000;
 }
+
 /* Ruleta */
 .ruleta-container {
     display: flex;
@@ -86,11 +88,13 @@ header, footer {visibility: hidden; height: 0;}
     background: #000000;
     height: 60vh;
 }
+
 .ruleta-frame {
     width: 600px;
     height: 600px;
     border: none;
 }
+
 /* Formulario */
 .st-expanderHeader {
     background: #ffffff !important;
@@ -98,6 +102,7 @@ header, footer {visibility: hidden; height: 0;}
     font-weight: bold;
     border-radius: 5px !important;
 }
+
 .form-content {
     background: #ffffff;
     color: #000000 !important;
@@ -105,10 +110,12 @@ header, footer {visibility: hidden; height: 0;}
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
+
 /* Labels en negro */
 label, .stRadio>div>div>label {
     color: #000000 !important;
 }
+
 /* Inputs */
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
@@ -116,9 +123,11 @@ label, .stRadio>div>div>label {
     color: #ffffff !important; /* Texto blanco en inputs */
     background: #1e1e1e !important; /* Fondo oscuro */
 }
+
 .stTextInput input::placeholder {
     color: #cccccc !important; /* Placeholder gris claro */
 }
+
 .stButton>button {
     background: #000000 !important;
     color: #ffffff !important;
@@ -126,6 +135,7 @@ label, .stRadio>div>div>label {
     padding: 8px 15px;
     font-size: 1rem;
 }
+
 .stButton>button:hover {
     background: #333333 !important;
 }
@@ -170,42 +180,39 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
         
         if enviar:
             if nombre and razon and whatsapp and premio and provincia:
-                # Armar fila ordenada con todos los datos y fecha/hora
-                fecha_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                
-                fila_ordenada = [
-                    nombre,
-                    razon,
-                    fantasia,
-                    cuil_cuit,
-                    whatsapp,
-                    cliente_tipo,
-                    "Sí" if estrella else "No",
-                    tipo_cliente,
-                    provincia,
-                    ", ".join(interes) if interes else "",
-                    ", ".join(categoria_productos) if categoria_productos else "",
-                    ", ".join(marcas) if marcas else "",
-                    premio,
-                    fecha_hora
-                ]
-                
-                datos = {"fila": fila_ordenada}
+                datos = {
+                    "nombre": nombre,
+                    "razonSocial": razon,
+                    "nombreFantasia": fantasia,
+                    "cuilCuit": cuil_cuit,
+                    "whatsapp": whatsapp,
+                    "clienteTipo": cliente_tipo,
+                    "clienteEstrella": estrella,
+                    "tipoCliente": tipo_cliente,
+                    "provincia": provincia,
+                    "interes": ", ".join(interes) if interes else "",
+                    "categoriaProductos": ", ".join(categoria_productos) if categoria_productos else "",
+                    "marcas": ", ".join(marcas) if marcas else "",
+                    "premio": premio
+                }
                 
                 try:
                     headers = {'Content-Type': 'application/json'}
                     respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
                     respuesta.raise_for_status()
                     
-                    respuesta_json = respuesta.json()
-                    if respuesta_json.get("status") in ["success", "ok"]:
-                        mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
-                        whatsapp_limpio = whatsapp.strip().replace(" ", "").replace("-", "")
-                        link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
-                        st.success("✅ Datos guardados correctamente!")
-                        st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
-                    else:
-                        st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
+                    try:
+                        respuesta_json = respuesta.json()
+                        if respuesta_json.get("status") in ["success", "ok"]:
+                            mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
+                            whatsapp_limpio = whatsapp.strip().replace(" ", "").replace("-", "")
+                            link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
+                            st.success("✅ Datos guardados correctamente!")
+                            st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
+                        else:
+                            st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
+                    except ValueError:
+                        st.error("❌ La respuesta no es JSON válido.")
                 except requests.exceptions.RequestException as e:
                     st.error(f"❌ Error de conexión: {str(e)}")
             else:
@@ -215,6 +222,7 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
 
 st.markdown('</div>', unsafe_allow_html=True)
 
+# --- FIN DEL CÓDIGO ---
 
 
 
