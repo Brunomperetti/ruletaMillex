@@ -18,6 +18,10 @@ PROVINCIAS_ARGENTINA = [
     "Santiago del Estero", "Tierra del Fuego", "Tucumán"
 ]
 
+INTERESES = ["Perro", "Gato", "Roedores", "Aves", "Acuario"]
+
+VENDEDORES = ["Yerson", "Naza", "Eduardo", "Camila", "Axel"]
+
 CATEGORIAS_PRODUCTOS = [
     "ACCESORIOS DE LIMPIEZA", "ACCESORIOS DE PELUQUERIA IMPOR", "ACCESORIOS IMPOR. P/PAJAROS -A",
     "ACCESORIOS IMPORTADOS P/PAJARO", "ACCESORIOS PARA ROEDORES", "ACCESORIOS VARIOS ACUARIO",
@@ -49,53 +53,7 @@ CATEGORIAS_PRODUCTOS = [
     "REPUESTOS PARA JAULAS IMPORTAD", "RESINA IMPORTADOS", "STICKERS Y DISPLAYS",
     "TAPA PARA TERRARIOS", "TERMOMETROS", "TRANSPORTADORAS DAYANG", "TRANSPORTADORAS MP",
     "TUBOS DE ILUMINACION"
-
 ]
-
-INTERESES = ["Perro", "Gato", "Roedores", "Aves", "Acuario"]
-
-VENDEDORES = ["Yerson", "Naza", "Eduardo", "Camila", "Axel"]
-
-# Estilos CSS
-st.markdown("""
-<style>
-html, body, [class*="css"] {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    font-family: Arial, sans-serif !important;
-    color: #000000 !important;
-}
-
-header, footer {visibility: hidden; height: 0;}
-.block-container {padding: 0; margin: 0 auto; max-width: 900px;}
-.stApp {background: #f5f5f5; padding: 0 !important;}
-
-.title-container {
-    background: #ffffff;
-    padding: 15px;
-    text-align: center;
-    color: #000000 !important;
-    font-family: 'Arial Black', sans-serif;
-    font-size: 2.5rem;
-    border-bottom: 2px solid #000000;
-}
-
-.ruleta-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #000000;
-    height: 60vh;
-}
-
-.ruleta-frame {
-    width: 600px;
-    height: 600px;
-    border: none;
-}
-</style>
-""", unsafe_allow_html=True)
 
 # Título
 st.markdown('<div class="title-container">RULETA MÁGICA MILLEX</div>', unsafe_allow_html=True)
@@ -127,10 +85,10 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
             tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
             provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
             interes_principal = st.multiselect("Interés principal", INTERESES)
-            categorias_productos = st.text_area("Categorías de productos")
+            categorias_productos = st.multiselect("Categorías de productos*", CATEGORIAS_PRODUCTOS)  # ✅ CAMBIO: ahora es multiselect
             marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
             premio = st.selectbox("Premio ganado*", ["10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
-            vendedor = st.selectbox("Vendedor*", VENDEDORES)  # ✅ NUEVO: campo vendedor
+            vendedor = st.selectbox("Vendedor*", VENDEDORES)
         
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
 
@@ -148,10 +106,10 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                 "tipoCliente": tipo_cliente,
                 "provincia": provincia,
                 "interes": ", ".join(interes_principal),
-                "categoriaProductos": categorias_productos,
+                "categoriaProductos": ", ".join(categorias_productos),  # ✅ Ahora envía correctamente
                 "marcas": ", ".join(marcas),
                 "premio": premio,
-                "vendedor": vendedor  # ✅ ENVÍA vendedor
+                "vendedor": vendedor
             }
 
             try:
