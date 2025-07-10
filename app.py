@@ -111,6 +111,11 @@ header, footer {visibility: hidden; height: 0;}
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
+/* Cambiar color a labels */
+label {
+    color: #000000 !important; /* 🔥 Encabezados en negro */
+}
+
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
 .stMultiselect>div>div>div,
@@ -207,3 +212,4 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
 st.markdown('</div>', unsafe_allow_html=True)
 
 # --- FIN DEL CÓDIGO --- 
+
