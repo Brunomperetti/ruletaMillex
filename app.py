@@ -119,10 +119,14 @@ label {
 /* Cambiar color de texto dentro de los inputs */
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
-.stMultiselect>div>div>div,
-.stRadio>div>div>label {
+.stMultiselect>div>div>div {
     color: #ffffff !important; /* 🔥 Texto blanco dentro de campos */
     background: #1e1e1e !important; /* 🔥 Fondo oscuro */
+}
+
+/* Cambiar color del texto en radio buttons */
+.stRadio>div>div>label {
+    color: #000000 !important; /* 🔥 Texto negro en opciones radio */
 }
 
 /* Cambiar color de los placeholders */
