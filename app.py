@@ -97,8 +97,8 @@ header, footer {visibility: hidden; height: 0;}
 
 /* Formulario */
 .st-expanderHeader {
-    background: #000000 !important;
-    color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important; /* 🔥 Encabezado negro */
     font-weight: bold;
     border-radius: 5px !important;
 }
@@ -111,27 +111,21 @@ header, footer {visibility: hidden; height: 0;}
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-/* Cambiar color a labels */
-label {
-    color: #000000 !important; /* Encabezados en negro */
+/* Labels en negro */
+label, .stRadio>div>div>label {
+    color: #000000 !important;
 }
 
-/* Cambiar color de texto dentro de los inputs */
+/* Inputs */
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
 .stMultiselect>div>div>div {
-    color: #ffffff !important; /* 🔥 Texto blanco dentro de campos */
-    background: #1e1e1e !important; /* 🔥 Fondo oscuro */
+    color: #ffffff !important; /* Texto blanco en inputs */
+    background: #1e1e1e !important; /* Fondo oscuro */
 }
 
-/* Cambiar color del texto en radio buttons */
-.stRadio>div>div>label {
-    color: #000000 !important; /* 🔥 Texto negro en opciones radio */
-}
-
-/* Cambiar color de los placeholders */
 .stTextInput input::placeholder {
-    color: #cccccc !important; /* 🔥 Placeholder gris claro */
+    color: #cccccc !important; /* Placeholder gris claro */
 }
 
 .stButton>button {
@@ -167,8 +161,11 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
         with col1:
             nombre = st.text_input("Nombre y apellido*")
             razon = st.text_input("Razón social*")
+            fantasia = st.text_input("Nombre de fantasía")
+            cuil_cuit = st.text_input("Número de CUIL o CUIT")
             whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...")
             cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
+            estrella = st.checkbox("⭐ Marcar como cliente estrella")
             
         with col2:
             tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
@@ -186,8 +183,11 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                 datos = {
                     "nombre": nombre,
                     "razonSocial": razon,
+                    "nombreFantasia": fantasia,
+                    "cuilCuit": cuil_cuit,
                     "whatsapp": whatsapp,
                     "clienteTipo": cliente_tipo,
+                    "clienteEstrella": estrella,
                     "tipoCliente": tipo_cliente,
                     "provincia": provincia,
                     "interes": ", ".join(interes) if interes else "",
