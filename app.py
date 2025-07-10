@@ -140,13 +140,13 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Formulario desplegable
+# Formulario desplegable - PARTE MODIFICADA
 with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('<div class="form-content">', unsafe_allow_html=True)
-
+    
     with st.form("formulario", clear_on_submit=True):
         col1, col2 = st.columns(2)
-
+        
         with col1:
             nombre = st.text_input("Nombre y apellido*")
             razon = st.text_input("Razón social*")
@@ -155,58 +155,57 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
             whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...")
             cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
             estrella = st.checkbox("⭐ Marcar como cliente estrella")
-
+            
         with col2:
             tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
             provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
             interes = st.multiselect("Interés principal", INTERESES)
-
+        
         categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS)
         marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
         premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
-
+        
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
-
+        
         if enviar:
             if nombre and razon and whatsapp and premio and provincia:
-                datos = {
-                    "Nombre y Apellido": nombre,
-                    "Razon Social": razon,
-                    "Nombre Fantasía": fantasia,
-                    "CUIL/CUIT": cuil_cuit,
+                # Obtener fecha y hora actual
+                fecha_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                
+                # Preparar parámetros para GET (formato que Google Apps Script espera)
+                params = {
+                    "nombre": nombre,
+                    "razon_social": razon,
+                    "nombre_fantasia": fantasia or "",
+                    "cuil_cuit": cuil_cuit or "",
                     "whatsapp": whatsapp,
-                    "Cliente Tipo": cliente_tipo,
-                    "Cliente Estrella": estrella,
-                    "Tipo Cliente": tipo_cliente,
-                    "Provincia": provincia,
-                    "Interés Principal": ", ".join(interes) if interes else "",
-                    "Categorías Productos": ", ".join(categoria_productos) if categoria_productos else "",
-                    "Marcas": ", ".join(marcas) if marcas else "",
-                    "premio ganado": premio
+                    "cliente_tipo": cliente_tipo,
+                    "cliente_estrella": "Sí" if estrella else "No",
+                    "tipo_cliente": tipo_cliente,
+                    "provincia": provincia,
+                    "interes_principal": ",".join(interes) if interes else "",
+                    "categorias_productos": ",".join(categoria_productos) if categoria_productos else "",
+                    "marcas": ",".join(marcas) if marcas else "",
+                    "premio_ganado": premio,
+                    "fecha_hora": fecha_hora
                 }
-
+                
                 try:
-                    headers = {'Content-Type': 'application/json'}
-                    respuesta = requests.post(WEB_APP_URL, json=datos, headers=headers)
-                    respuesta.raise_for_status()
-
-                    try:
-                        respuesta_json = respuesta.json()
-                        if respuesta_json.get("status") in ["success", "ok"]:
+                    # Enviar como GET request
+                    response = requests.get(WEB_APP_URL, params=params)
+                    
+                    if response.status_code == 200:
+                        st.success("✅ Datos guardados correctamente!")
+                        if premio != "Seguí participando":
                             mensaje = f"¡Felicitaciones {nombre}! 🎉 Obtuviste: *{premio}*. Presentá este mensaje para canjearlo."
                             whatsapp_limpio = whatsapp.strip().replace(" ", "").replace("-", "")
                             link = f"https://wa.me/{whatsapp_limpio}?text={urllib.parse.quote(mensaje)}"
-                            st.success("✅ Datos guardados correctamente!")
                             st.markdown(f"[📱 Abrir conversación de WhatsApp]({link})", unsafe_allow_html=True)
-                        else:
-                            st.error(f"❌ Error: {respuesta_json.get('message', 'Error desconocido')}")
-                    except ValueError:
-                        st.error("❌ La respuesta no es JSON válido.")
-                except requests.exceptions.RequestException as e:
+                    else:
+                        st.error(f"❌ Error al guardar: {response.text}")
+                except Exception as e:
                     st.error(f"❌ Error de conexión: {str(e)}")
             else:
                 st.warning("⚠️ Por favor completa todos los campos obligatorios (*)")
-
+    
     st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
