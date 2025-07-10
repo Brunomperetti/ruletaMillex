@@ -142,23 +142,22 @@ with st.expander("🎁 Cargar datos del ganador", expanded=False):
         
         if enviar:
             fecha_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-            datos = {
-                "nombre": nombre,
-                "razonSocial": razon,
-                "nombreFantasia": fantasia,
-                "cuilCuit": cuil_cuit,
-                "whatsapp": whatsapp,
-                "clienteTipo": cliente_tipo,
-                "clienteEstrella": cliente_estrella,
-                "tipoCliente": tipo_cliente,
-                "provincia": provincia,
-                "interesPrincipal": interes_principal,
-                "categoriasProductos": ", ".join(categorias_productos),
-                "marcas": ", ".join(marcas),
-                "premio": premio,
-                "fechaHora": fecha_hora
-            }
-            
+          datos = {
+    "Nombre y Apellido": nombre,
+    "Razon Social": razon,
+    "Nombre Fantasía": fantasia,
+    "CUIL/CUIT": cuil_cuit,
+    "whatsapp": whatsapp,
+    "Cliente Tipo": cliente_tipo,
+    "Cliente Estrella": cliente_estrella,
+    "Tipo Cliente": tipo_cliente,
+    "Provincia": provincia,
+    "Interés Principal": interes_principal,
+    "Categorías Productos": ", ".join(categorias_productos),
+    "Marcas": ", ".join(marcas),
+    "premio ganado": premio,
+    "Fecha y hora": fecha_hora
+}
             try:
                 # Envío como POST
                 headers = {'Content-Type': 'application/json'}
