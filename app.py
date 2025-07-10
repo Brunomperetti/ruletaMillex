@@ -62,7 +62,7 @@ html, body, [class*="css"] {
     padding: 0;
     overflow-x: hidden;
     font-family: Arial, sans-serif !important;
-    color: #000000 !important; /* 🔥 Forzar letra negra */
+    color: #000000 !important; /* Letras generales negras */
 }
 
 header, footer {visibility: hidden; height: 0;}
@@ -105,7 +105,7 @@ header, footer {visibility: hidden; height: 0;}
 
 .form-content {
     background: #ffffff;
-    color: #000000 !important; /* 🔥 Letras negras en formulario */
+    color: #000000 !important;
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -113,14 +113,21 @@ header, footer {visibility: hidden; height: 0;}
 
 /* Cambiar color a labels */
 label {
-    color: #000000 !important; /* 🔥 Encabezados en negro */
+    color: #000000 !important; /* Encabezados en negro */
 }
 
+/* Cambiar color de texto dentro de los inputs */
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
 .stMultiselect>div>div>div,
 .stRadio>div>div>label {
-    color: #000000 !important; /* 🔥 Letras negras en campos */
+    color: #ffffff !important; /* 🔥 Texto blanco dentro de campos */
+    background: #1e1e1e !important; /* 🔥 Fondo oscuro */
+}
+
+/* Cambiar color de los placeholders */
+.stTextInput input::placeholder {
+    color: #cccccc !important; /* 🔥 Placeholder gris claro */
 }
 
 .stButton>button {
@@ -211,5 +218,6 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- FIN DEL CÓDIGO --- 
+# --- FIN DEL CÓDIGO ---
+
 
