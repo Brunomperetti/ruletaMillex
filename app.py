@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
@@ -62,7 +62,7 @@ html, body, [class*="css"] {
     padding: 0;
     overflow-x: hidden;
     font-family: Arial, sans-serif !important;
-    color: #000000 !important; /* Letras negras */
+    color: #000000 !important; /* Letras generales negras */
 }
 
 header, footer {visibility: hidden; height: 0;}
@@ -97,28 +97,35 @@ header, footer {visibility: hidden; height: 0;}
 
 /* Formulario */
 .st-expanderHeader {
-    background: #000000 !important;
-    color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important; /* 🔥 Encabezado negro */
     font-weight: bold;
     border-radius: 5px !important;
 }
 
 .form-content {
     background: #ffffff;
+    color: #000000 !important;
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
+/* Labels en negro */
+label, .stRadio>div>div>label {
+    color: #000000 !important;
+}
+
+/* Inputs */
 .stTextInput>div>div>input,
 .stSelectbox>div>div>select,
 .stMultiselect>div>div>div {
-    border-radius: 4px !important;
-    padding: 6px 10px !important;
-    border: 1px solid #888 !important;
-    width: 250px !important;
-    color: #ffffff !important; /* Letras blancas en fondo oscuro */
-    background: #222222 !important;
+    color: #ffffff !important; /* Texto blanco en inputs */
+    background: #1e1e1e !important; /* Fondo oscuro */
+}
+
+.stTextInput input::placeholder {
+    color: #cccccc !important; /* Placeholder gris claro */
 }
 
 .stButton>button {
@@ -154,19 +161,20 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
         with col1:
             nombre = st.text_input("Nombre y apellido*")
             razon = st.text_input("Razón social*")
-            nombre_fantasia = st.text_input("Nombre de fantasía")
-            cuil_cuit = st.text_input("CUIL/CUIT")
+            fantasia = st.text_input("Nombre de fantasía")
+            cuil_cuit = st.text_input("Número de CUIL o CUIT")
             whatsapp = st.text_input("WhatsApp (con código país)*", placeholder="+549...")
             cliente_tipo = st.radio("¿Es cliente nuevo o actual?*", ["Nuevo", "Actual"])
-            cliente_estrella = st.checkbox("⭐ Cliente estrella")
+            estrella = st.checkbox("⭐ Marcar como cliente estrella")
             
         with col2:
             tipo_cliente = st.selectbox("Tipo de cliente*", ["Pet Shop", "Veterinaria", "Distribuidora", "Otro"])
             provincia = st.selectbox("Provincia*", PROVINCIAS_ARGENTINA)
             interes = st.multiselect("Interés principal", INTERESES)
-            categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS)
-            marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
-            premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
+        
+        categoria_productos = st.multiselect("Categorías de productos que maneja", CATEGORIAS_PRODUCTOS)
+        marcas = st.multiselect("Marcas que maneja", ["GiGwi", "AFP", "Beeztees", "Flexi", "Boyu", "Shanda", "Dayaing", "Haintech", "The Pets", "Otros"])
+        premio = st.selectbox("Premio ganado*", ["", "10% de descuento", "20% de descuento", "25% de descuento", "5% de descuento", "Seguí participando"])
         
         enviar = st.form_submit_button("ENVIAR Y GUARDAR DATOS")
         
@@ -175,11 +183,11 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                 datos = {
                     "nombre": nombre,
                     "razonSocial": razon,
-                    "nombreFantasia": nombre_fantasia,
+                    "nombreFantasia": fantasia,
                     "cuilCuit": cuil_cuit,
                     "whatsapp": whatsapp,
                     "clienteTipo": cliente_tipo,
-                    "clienteEstrella": "Sí" if cliente_estrella else "No",
+                    "clienteEstrella": estrella,
                     "tipoCliente": tipo_cliente,
                     "provincia": provincia,
                     "interes": ", ".join(interes) if interes else "",
@@ -213,6 +221,9 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
+# --- FIN DEL CÓDIGO ---
+
 
 
 
