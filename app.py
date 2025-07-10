@@ -1,9 +1,10 @@
-import streamlit as st
+import streamlit as st 
 import streamlit.components.v1 as components
 import urllib.parse
 import requests
+from datetime import datetime  # Esta es la importación que faltaba
 
-# URL actualizada de tu Apps Script
+# URL de tu Apps Script
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxg1j5w57os20mywlO0Kup-kqMxfnCuIeTbJBcSqJFGPizKVls1xp5WErH0K_yKypMQ/exec"
 
 # Configuración de la página
@@ -140,7 +141,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Formulario desplegable - PARTE MODIFICADA
+# Formulario desplegable
 with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
     st.markdown('<div class="form-content">', unsafe_allow_html=True)
     
@@ -169,10 +170,10 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
         
         if enviar:
             if nombre and razon and whatsapp and premio and provincia:
-                # Obtener fecha y hora actual
+                # Obtener fecha y hora actual (ahora funciona porque datetime está importado)
                 fecha_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                 
-                # Preparar parámetros para GET (formato que Google Apps Script espera)
+                # Preparar parámetros para GET
                 params = {
                     "nombre": nombre,
                     "razon_social": razon,
@@ -191,7 +192,6 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                 }
                 
                 try:
-                    # Enviar como GET request
                     response = requests.get(WEB_APP_URL, params=params)
                     
                     if response.status_code == 200:
@@ -205,6 +205,12 @@ with st.expander("CARGAR DATOS DEL GANADOR", expanded=False):
                         st.error(f"❌ Error al guardar: {response.text}")
                 except Exception as e:
                     st.error(f"❌ Error de conexión: {str(e)}")
+            else:
+                st.warning("⚠️ Por favor completa todos los campos obligatorios (*)")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)n: {str(e)}")
             else:
                 st.warning("⚠️ Por favor completa todos los campos obligatorios (*)")
     
