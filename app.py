@@ -8,18 +8,17 @@ from zoneinfo import ZoneInfo
 # ---------- CONFIG ----------
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzikIlLVfaiiMPfOG4NcjVL3TnDFPSGIVJt36dGw68QZr9cS3M1Ona6jX-SliJub4ig/exec"
 
-PRIZES  = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
+PRIZES  = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Premio sorpresa"]
 WEIGHTS = [5,          12,         18,          25,         40]
 COUPONS = {
     "25% OFF": "CM25-ZX9R-TF8M",
     "20% OFF": "CM20-VK6R-3BZ4",
     "15% OFF": "CM15-GQ8D-PN7X",
     "10% OFF": "CM10-LW5C-HR3T",
-    "Premio sorpresa": "CM00-TRYA-GAIN",
 }
 
-SPIN_SECONDS = 10.0  # duración total del giro (pedido)
-TICK_MS = 45         # refresco de la “ruleta” (más chico = más fluido)
+SPIN_SECONDS = 10.0
+TICK_MS = 45
 
 # ---------- PAGE ----------
 st.set_page_config(page_title="Cyber Monday - Petsu", layout="centered")
@@ -36,11 +35,9 @@ def pick_prize():
 
 def current_period():
     hoy = datetime.now(ZoneInfo("America/Argentina/Buenos_Aires"))
-    # Ej: "Noviembre de 2025"
     return hoy.strftime("%B de %Y").capitalize()
 
 def post_json(url, payload, timeout=15):
-    """Envía JSON y devuelve dict (o lanza excepción legible)."""
     r = requests.post(url, json=payload, timeout=timeout)
     r.raise_for_status()
     try:
@@ -48,7 +45,6 @@ def post_json(url, payload, timeout=15):
     except Exception as e:
         raise RuntimeError(f"Respuesta no JSON: {r.text[:200]}") from e
 
-# Colores por premio (para el slot)
 COL = {
     "25% OFF": "#ff3b3b",
     "20% OFF": "#ff8c00",
@@ -63,7 +59,7 @@ st.session_state.setdefault("ya_jugo", False)
 st.session_state.setdefault("final_prize", None)
 st.session_state.setdefault("mail_sent", False)
 
-# ---------- EMAIL FIRST ----------
+# ---------- EMAIL ----------
 with st.form("email_form", clear_on_submit=False):
     email_in = st.text_input("📧 Ingresá tu email para jugar*", placeholder="tu@correo.com")
     ok = st.form_submit_button("✅ Confirmar email")
@@ -72,7 +68,6 @@ with st.form("email_form", clear_on_submit=False):
             st.error("Ingresá un email válido.")
         else:
             st.session_state.email = email_in.strip()
-            # chequear en backend si ya jugó
             try:
                 res = post_json(WEB_APP_URL, {"accion": "check_email", "email": st.session_state.email}, timeout=12)
                 if res.get("status") == "ya_participo":
@@ -86,47 +81,33 @@ with st.form("email_form", clear_on_submit=False):
             except Exception as e:
                 st.error(f"❌ Error de conexión: {e}")
 
-# ---------- SLOT (PYTHON-ONLY ANIMATION) ----------
+# ---------- SLOT ----------
 if st.session_state.email and not st.session_state.ya_jugo:
     colA, colB, colC = st.columns([1,2,1])
     with colB:
         spin_clicked = st.button("🎯 ¡GIRAR!", use_container_width=True, disabled=st.session_state.final_prize is not None and not st.session_state.mail_sent)
 
-    # Si presiona GIRAR: 1) decide premio; 2) corre animación 10s; 3) revela y envía cupón
     if spin_clicked:
         st.session_state.final_prize = pick_prize()
         st.session_state.mail_sent = False
 
-        # Preparamos una lista "infinita" de premios para ir ciclando visualmente
-        reel = ["20% OFF", "15% OFF", "10% OFF", "Seguí participando", "25% OFF"]
-
-        # Placeholder visual
+        reel = ["20% OFF", "15% OFF", "10% OFF", "Premio sorpresa", "25% OFF"]
         slot_box = st.empty()
 
         start = time.time()
         elapsed = 0.0
-        steps = 0
 
-        # Easing simétrico (suave) con curva cónica (easeInOutQuad)
         def ease(t):
-            # t en [0,1] -> curva suave simétrica
             return 2*t*t if t < 0.5 else 1 - pow(-2*t + 2, 2)/2
 
-        # Vamos cambiando el índice con velocidad que va bajando
-        # Al principio avanza muchos items por tick, al final 1-item por tick
         current_idx = 0
-        last_label = None
-
         while elapsed < SPIN_SECONDS:
             t = (time.time() - start) / SPIN_SECONDS
             t = max(0.0, min(1.0, t))
-            speed = 12 * (1.0 - ease(t)) + 1.0  # 13 -> 1 items/tick (desacelera simétrico)
-
-            # avanzamos "speed" posiciones
+            speed = 12 * (1.0 - ease(t)) + 1.0
             current_idx = (current_idx + int(max(1, round(speed)))) % len(reel)
             label = reel[current_idx]
 
-            # Dibujo del “slot” (una sola fila grande, look nítido)
             slot_box.markdown(f"""
             <div style="
                 margin:18px auto;
@@ -145,12 +126,9 @@ if st.session_state.email and not st.session_state.ya_jugo:
             </div>
             """, unsafe_allow_html=True)
 
-            last_label = label
             time.sleep(TICK_MS/1000.0)
             elapsed = time.time() - start
-            steps += 1
 
-        # Al terminar, mostramos el premio real elegido por Python
         prize = st.session_state.final_prize
         slot_box.markdown(f"""
         <div style="
@@ -170,27 +148,43 @@ if st.session_state.email and not st.session_state.ya_jugo:
         </div>
         """, unsafe_allow_html=True)
 
-        # Enviar cupón automáticamente al terminar (una sola vez)
-        try:
-            payload = {
-                "accion": "enviar_email_cybermonday",
-                "email": st.session_state.email,
-                "premio": prize,
-                "cupon": COUPONS[prize],
-                "periodo": current_period()
-            }
-            res = post_json(WEB_APP_URL, payload, timeout=20)
-            if res.get("status") == "ya_participo":
-                st.warning("⚠️ Este correo ya había jugado.")
-                st.session_state.ya_jugo = True
-            elif res.get("status") in ["ok", "success"]:
-                st.success("✅ ¡Listo! Te enviamos el cupón por mail 🎁")
-                st.session_state.mail_sent = True
-                st.session_state.ya_jugo = True
-            else:
-                st.error(f"❌ Error: {res.get('message', 'No se pudo enviar el mail')}")
-        except Exception as e:
-            st.error(f"❌ Error de conexión al enviar el mail: {e}")
+        if prize == "Premio sorpresa":
+            st.info("😅 ¡Gracias por participar! Te invitamos a visitar nuestra web.")
+            st.markdown(
+                """
+                <div style="text-align:center; margin-top:8px;">
+                  <a href="https://petsu.com.ar" target="_blank" style="
+                      display:inline-block; padding:10px 16px; border-radius:10px;
+                      background:#1f8ef1; color:white; text-decoration:none; font-weight:700;">
+                    🐾 Ir a petsu.com.ar
+                  </a>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            st.session_state.ya_jugo = True
+            st.session_state.mail_sent = True
+        else:
+            try:
+                payload = {
+                    "accion": "enviar_email_cybermonday",
+                    "email": st.session_state.email,
+                    "premio": prize,
+                    "cupon": COUPONS[prize],
+                    "periodo": current_period()
+                }
+                res = post_json(WEB_APP_URL, payload, timeout=20)
+                if res.get("status") == "ya_participo":
+                    st.warning("⚠️ Este correo ya había jugado.")
+                    st.session_state.ya_jugo = True
+                elif res.get("status") in ["ok", "success"]:
+                    st.success("✅ ¡Listo! Te enviamos el cupón por mail 🎁")
+                    st.session_state.mail_sent = True
+                    st.session_state.ya_jugo = True
+                else:
+                    st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
+            except Exception as e:
+                st.error(f"❌ Error de conexión al enviar el mail: {e}")
 
 # Si ya jugó, bloqueamos
 if st.session_state.ya_jugo:
