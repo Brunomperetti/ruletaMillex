@@ -22,10 +22,10 @@ SPIN_SECONDS = 10.0  # duración total del giro (pedido)
 TICK_MS = 45         # refresco de la “ruleta” (más chico = más fluido)
 
 # ---------- PAGE ----------
-st.set_page_config(page_title="Cyber Monday - Millex", layout="centered")
+st.set_page_config(page_title="Cyber Monday - Petsu", layout="centered")
 st.markdown("""
 <div style="text-align:center;font-weight:900;font-size:38px;line-height:1.15;margin-bottom:6px;">
-🎰 CYBER MONDAY • SLOT MÁGICO MILLEX
+🎰 CYBER MONDAY • SLOT MÁGICO PETSU (hasta 25% de descuento)
 </div>
 <p style="text-align:center;color:#8a8a8a;">Ingresá tu email para jugar. Gira ~10s, desacelera y frena una vez. Al frenar se revela tu premio ✨</p>
 """, unsafe_allow_html=True)
