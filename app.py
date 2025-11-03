@@ -1,24 +1,25 @@
 import streamlit as st
 import requests
 import random
-import streamlit.components.v1 as components
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import streamlit.components.v1 as components
 
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
 
 st.set_page_config(page_title="Cyber Monday - Millex", layout="centered", initial_sidebar_state="collapsed")
-
 st.markdown("""
-<div style="text-align:center;font-weight:900;font-size:42px;line-height:1.2;margin-bottom:6px;">
+<div style="text-align:center;font-weight:900;font-size:42px;line-height:1.15;margin-bottom:4px;">
 🎰 CYBER MONDAY • SLOT MÁGICO MILLEX
 </div>
 <p style="text-align:center;color:#666;">Tocá el botón y mirá cómo gira la suerte ✨</p>
 """, unsafe_allow_html=True)
 
-# Premios
+# Premios y pesos
 PRIZES = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
-PROB = [5, 12, 18, 25, 40]
+PROB   = [5,          12,         18,          25,         40]
+
+# Cupones fijos (no se muestran en pantalla)
 COUPONS = {
     "25% OFF": "CM25-ZX9R-TF8M",
     "20% OFF": "CM20-VK6R-3BZ4",
@@ -35,107 +36,129 @@ def current_period():
     return hoy.strftime("%B de %Y").capitalize()
 
 # Estado
-if "final_prize" not in st.session_state:
-    st.session_state.final_prize = None
+st.session_state.setdefault("final_prize", None)
+st.session_state.setdefault("spinning_token", 0)
 
-# Slot machine HTML
-html = """
+colA, colB, colC = st.columns([1,2,1])
+with colB:
+    if st.button("🎯 ¡GIRAR!", use_container_width=True):
+        st.session_state.final_prize = pick_prize()  # Python decide el resultado
+        st.session_state.spinning_token += 1         # fuerza re-render de la animación
+
+# HTML del slot: anima rápido y se detiene en el premio que ya decidió Python
+final = st.session_state.final_prize or ""
+token = st.session_state.spinning_token  # evita cache del iframe
+
+html = f"""
 <style>
-@keyframes flicker {
-  0%,19%,21%,23%,25%,54%,56%,100% {opacity:1;}
-  20%,24%,55% {opacity:0;}
-}
-.slot {
-  font-size:50px;
-  font-weight:900;
-  text-align:center;
-  margin:40px auto 20px;
-  color:#ff3b3b;
-  text-shadow:0 0 15px rgba(255,0,0,0.6);
-  min-height:80px;
-}
-.spin-btn {
-  background:linear-gradient(90deg,#ff3b3b,#ff8c00);
-  color:white;
-  font-weight:800;
-  border:none;
-  border-radius:8px;
-  padding:16px 40px;
-  font-size:20px;
-  cursor:pointer;
-  transition:0.3s;
-}
-.spin-btn:hover {
-  transform:scale(1.05);
-  background:linear-gradient(90deg,#ff8c00,#ff3b3b);
-}
+.slot-wrap {{
+  display:flex; flex-direction:column; align-items:center; gap:10px; margin:22px 0;
+}}
+.slot-window {{
+  width: 520px; max-width: 92vw; height: 90px;
+  overflow: hidden; border-radius: 14px;
+  border: 3px solid #111; background: #0d0d0d;
+  box-shadow: 0 12px 28px rgba(0,0,0,.35), inset 0 0 30px rgba(255,255,255,.08);
+  position: relative;
+}}
+.slot-track {{
+  position:absolute; left:0; top:0; right:0;
+  display:flex; flex-direction:column; align-items:center;
+  padding: 12px 0;
+}}
+.slot-item {{
+  font-size: 42px; font-weight: 900;
+  color:#ff3b3b; text-shadow: 0 0 14px rgba(255,59,59,.45);
+  line-height: 1.2; height: 72px;
+}}
+.slot-item.c2 {{ color:#ff8c00; text-shadow: 0 0 14px rgba(255,140,0,.45); }}
+.slot-item.c3 {{ color:#ffd60a; text-shadow: 0 0 14px rgba(255,214,10,.45); }}
+.slot-item.c4 {{ color:#2ecc71; text-shadow: 0 0 14px rgba(46,204,113,.45); }}
+.slot-item.c5 {{ color:#3498db; text-shadow: 0 0 14px rgba(52,152,219,.45); }}
+
+.reveal {{
+  text-align:center; font-size:28px; font-weight:900; color:#ff3b3b;
+  animation: pop .8s ease both;
+}}
+@keyframes pop {{
+  0% {{ transform:scale(.7); opacity:0 }}
+  60%{{ transform:scale(1.08); opacity:1 }}
+  100%{{ transform:scale(1) }}
+}}
+.glow {{
+  position:absolute; inset:-6px; border-radius:16px;
+  box-shadow: 0 0 22px rgba(255,153,0,.35), 0 0 40px rgba(255,59,59,.30) inset;
+  pointer-events:none;
+}}
 </style>
 
-<div style="text-align:center;">
-  <div id="slotText" class="slot">🎁 ¡Preparando tu premio!</div>
-  <button id="spinButton" class="spin-btn">🎯 GIRAR</button>
+<div class="slot-wrap" id="slot-{token}">
+  <div class="slot-window">
+    <div class="glow"></div>
+    <div class="slot-track" id="track">
+      <!-- Secuencia rápida (simulada) -->
+      <div class="slot-item">20% OFF</div>
+      <div class="slot-item c3">15% OFF</div>
+      <div class="slot-item c4">10% OFF</div>
+      <div class="slot-item c5">Seguí participando</div>
+      <div class="slot-item">25% OFF</div>
+      <div class="slot-item c3">15% OFF</div>
+      <div class="slot-item c4">10% OFF</div>
+      <div class="slot-item c5">Seguí participando</div>
+      <div class="slot-item">20% OFF</div>
+      <div class="slot-item c4">10% OFF</div>
+      <div class="slot-item c3">15% OFF</div>
+      <div class="slot-item c5">Seguí participando</div>
+      <!-- Resultado final (inyectado) -->
+      <div class="slot-item" id="finalText">{"🎉 " + final + " 🎉" if final else ""}</div>
+    </div>
+  </div>
 </div>
 
 <script>
-const prizes = ["25% OFF","20% OFF","15% OFF","10% OFF","Seguí participando"];
-const slot = document.getElementById("slotText");
-const button = document.getElementById("spinButton");
-let spinning = false;
+(function(){{
+  const final = {repr(final)};
+  const track = document.getElementById('track');
+  if(!track) return;
 
-button.addEventListener("click", ()=>{
-  if(spinning) return;
-  spinning = true;
-  button.disabled = true;
-  let count = 0;
-  const total = 40 + Math.floor(Math.random()*20);
-  const interval = setInterval(()=>{
-    slot.textContent = prizes[count % prizes.length];
-    count++;
-    slot.style.color = ["#ff3b3b","#ff8c00","#ffd60a","#2ecc71","#3498db"][count % prizes.length];
-    slot.style.textShadow = `0 0 20px ${slot.style.color}`;
-    if(count > total){
-      clearInterval(interval);
-      const result = prizes[Math.floor(Math.random()*prizes.length)];
-      slot.textContent = "🎉 " + result + " 🎉";
-      slot.style.animation = "flicker 1.2s ease-in-out 3";
-      setTimeout(()=>{
-        window.parent.postMessage({type:'result', prize: result}, '*');
-      }, 1800);
-    }
-  }, 80);
-});
+  // altura aproximada de cada "item" (72px + padding)
+  const step = 72;
+  const items = track.children.length;
+  const spinRows = 14; // filas que "pasan"
+  let y = 0;
+  let i = 0;
+
+  function tick(){
+    y -= step;
+    track.style.transform = `translateY(${y}px)`;
+    i++;
+    if(i < spinRows){{
+      setTimeout(tick, i < 6 ? 60 : i < 10 ? 80 : 110); // desacelera
+    }} else {{
+      // Detener y setear resultado visible
+      const f = document.getElementById('finalText');
+      if(f && final){{
+        f.textContent = "🎉 " + final + " 🎉";
+      }}
+    }}
+  }
+
+  // Solo animar si hay un resultado (cuando apretaste GIRAR)
+  if(final){{
+    // reinicio al top
+    track.style.transform = 'translateY(0px)';
+    setTimeout(tick, 80);
+  }}
+}})();
 </script>
 """
-components.html(html, height=260)
+components.html(html, height=260, scrolling=False)
 
-# JS event listener
-st.markdown("""
-<script>
-window.addEventListener('message',(e)=>{
-  if(e.data && e.data.type==='result'){
-    parent.postMessage({isStreamlitMessage:true,type:'streamlit:setComponentValue',value:e.data.prize},'*');
-  }
-});
-</script>
-""", unsafe_allow_html=True)
-
-# Resultado
-if st.session_state.final_prize is None:
-    st.session_state.final_prize = None
-
-slot_result = st.empty()
-if st.session_state.final_prize is None:
-    st.session_state.final_prize = st.text_input("", value="", key="slot_prize_input")
-
-if st.session_state.slot_prize_input:
-    prize = st.session_state.slot_prize_input
-    st.session_state.final_prize = prize
-
-# Mostrar premio y formulario
+# Mostrar resultado + formulario email
 if st.session_state.final_prize:
     prize = st.session_state.final_prize
     if prize == "Seguí participando":
-        st.warning("😅 Te tocó **Seguí participando**. ¡Probá de nuevo más tarde!")
+        st.info("😅 Te tocó **Seguí participando**. ¡Probá de nuevo más tarde!")
     else:
         st.success(f"🎉 ¡Ganaste {prize}!")
         with st.form("email_form", clear_on_submit=False):
@@ -145,13 +168,13 @@ if st.session_state.final_prize:
                 if not email or "@" not in email:
                     st.error("Ingresá un email válido.")
                 else:
-                    payload = {
+                    payload = {{
                         "accion": "enviar_email_cybermonday",
                         "email": email.strip(),
                         "premio": prize,
                         "cupon": COUPONS[prize],
                         "periodo": current_period()
-                    }
+                    }}
                     try:
                         r = requests.post(WEB_APP_URL, json=payload, timeout=15)
                         r.raise_for_status()
@@ -159,12 +182,11 @@ if st.session_state.final_prize:
                         if res.get("status") == "ya_participo":
                             st.error("⚠️ Este correo ya participó.")
                         elif res.get("status") in ["ok", "success"]:
-                            st.balloons()
                             st.success("✅ ¡Listo! Revisá tu correo, te mandamos el cupón 🎁")
                         else:
-                            st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
+                            st.error(f"❌ Error: {{res.get('message','No se pudo enviar el mail')}}")
                     except requests.exceptions.RequestException as e:
-                        st.error(f"❌ Error de conexión: {e}")
+                        st.error(f"❌ Error de conexión: {{e}}")
 
 
 
