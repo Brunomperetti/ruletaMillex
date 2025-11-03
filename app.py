@@ -1,4 +1,3 @@
-import time
 import random
 import requests
 import streamlit as st
@@ -6,7 +5,7 @@ import streamlit.components.v1 as components
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-# -------- CONFIG --------
+# ---------- CONFIG ----------
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
 
 PRIZES  = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
@@ -19,16 +18,17 @@ COUPONS = {
     "Seguí participando": "CM00-TRYA-GAIN",
 }
 
+# Altura visual de cada fila y ventana
 ITEM_H = 72
 VISIBLE_ROWS = 3
-CENTER_IDX = 1
+CENTER_IDX = 1   # 0/1/2 (1 = centro visible)
 
 st.set_page_config(page_title="Cyber Monday - Millex", layout="centered", initial_sidebar_state="collapsed")
 st.markdown("""
 <div style="text-align:center;font-weight:900;font-size:42px;line-height:1.15;margin-bottom:6px;">
 🎰 CYBER MONDAY • SLOT MÁGICO MILLEX
 </div>
-<p style="text-align:center;color:#8a8a8a;">Tocá GIRAR, mirá cómo vuela y frenalo cuando quieras ✨</p>
+<p style="text-align:center;color:#8a8a8a;">Tocá GIRAR: gira ~20s, desacelera y frena solo. Al frenar se revela tu premio ✨</p>
 """, unsafe_allow_html=True)
 
 def pick_prize():
@@ -38,53 +38,38 @@ def current_period():
     hoy = datetime.now(ZoneInfo("America/Argentina/Buenos_Aires"))
     return hoy.strftime("%B de %Y").capitalize()
 
-# -------- STATE --------
-st.session_state.setdefault("final_prize", None)     # premio decidido (oculto hasta revelar)
-st.session_state.setdefault("spin_seed", 0)          # cambia para reiniciar animación
-st.session_state.setdefault("spinning", False)       # está girando?
-st.session_state.setdefault("reveal", False)         # mostrar resultado?
-st.session_state.setdefault("spin_start", 0.0)       # timestamp inicio
-st.session_state.setdefault("spin_duration", 1.6)    # duración animación (rápido)
-st.session_state.setdefault("target_px", 0)          # desplazamiento final
+# ---------- STATE ----------
+st.session_state.setdefault("final_prize", None)   # premio decidido
+st.session_state.setdefault("spin_seed", 0)        # para regenerar keyframes
+st.session_state.setdefault("revealed", False)     # ya terminó la animación?
+st.session_state.setdefault("target_px", 0)        # desplazamiento final px
 
-# -------- CONTROLES --------
-c1, c2, c3 = st.columns([1,1,1])
-with c2:
-    if st.button("🎯 ¡GIRAR!", use_container_width=True, disabled=st.session_state.spinning):
+# ---------- BOTÓN GIRAR ----------
+colA, colB, colC = st.columns([1,2,1])
+with colB:
+    if st.button("🎯 ¡GIRAR!", use_container_width=True, disabled=bool(st.session_state.final_prize and not st.session_state.revealed)):
+        # Decide el premio (Python = fuente de verdad)
         st.session_state.final_prize = pick_prize()
-        st.session_state.spin_seed += 1
-        st.session_state.reveal = False
-        st.session_state.spinning = True
-        st.session_state.spin_start = time.time()
+        st.session_state.spin_seed  += 1
+        st.session_state.revealed    = False   # se revelará al terminar la animación
 
-# Botón Frenar solo visible mientras gira
-if st.session_state.spinning and not st.session_state.reveal:
-    c1, c2, c3 = st.columns([1,1,1])
-    with c2:
-        if st.button("🛑 Frenar", use_container_width=True):
-            st.session_state.reveal = True
-            st.session_state.spinning = False
+final = st.session_state.final_prize
+seed  = st.session_state.spin_seed
 
-# Auto-revelar cuando termine la animación
-if st.session_state.spinning and (time.time() - st.session_state.spin_start) >= (st.session_state.spin_duration + 0.1):
-    st.session_state.reveal = True
-    st.session_state.spinning = False
-
-# -------- ARMAR CARRIL --------
+# ---------- ARMAR EL CARRIL (lista que se desplaza) ----------
 base_cycle = ["20% OFF", "15% OFF", "10% OFF", "Seguí participando", "25% OFF"]
 scroll = []
 
-# siempre mostramos un carril largo (para que vuele rápido)
-for _ in range(14):
+# Carril largo para 20s de animación
+for _ in range(22):
     scroll.extend(base_cycle)
 
-# si ya hay premio decidido, agregamos final al centro
-final = st.session_state.final_prize
+# Agregamos un poco de “suspenso” y el final como última fila
 if final:
-    scroll.extend(["15% OFF","20% OFF","10% OFF","Seguí participando"])
+    scroll.extend(["15% OFF", "20% OFF", "10% OFF", "Seguí participando"])
     scroll.append(final)
 
-# calcular desplazamiento para centrar el final
+# Calcular desplazamiento para que el FINAL quede centrado al frenar
 if final:
     stop_index = len(scroll) - 1
     top_index  = stop_index - CENTER_IDX
@@ -93,9 +78,8 @@ else:
     st.session_state.target_px = 0
 
 target_px = st.session_state.target_px
-seed      = st.session_state.spin_seed
-duration  = st.session_state.spin_duration  # segundos
 
+# ---------- PALETA ----------
 colors = {
     "25% OFF": ("#ff3b3b", "rgba(255,59,59,.45)"),
     "20% OFF": ("#ff8c00", "rgba(255,140,0,.45)"),
@@ -105,7 +89,9 @@ colors = {
 }
 DEFAULT_COL = ("#dddddd", "rgba(255,255,255,.25)")
 
-def slot_html(items, target_px, seed, animate):
+# ---------- HTML + CSS (20s con desaceleración y señal de fin hacia Python) ----------
+def slot_html(items, target_px, seed, animate: bool):
+    duration = 20.0  # segundos
     style = f"""
     <style>
       .slot-wrap {{
@@ -121,7 +107,7 @@ def slot_html(items, target_px, seed, animate):
         position:absolute; left:0; right:0; top:0;
         display:flex; flex-direction:column; align-items:center;
         transform: translateY(0);
-        {"animation: spin-"+str(seed)+f" {duration}s cubic-bezier(.12,.82,.16,1) forwards;" if animate else ""}
+        {"animation: spin-"+str(seed)+f" {duration}s linear forwards;" if animate else ""}
       }}
       .slot-item {{
         height:{ITEM_H}px; line-height:{ITEM_H}px;
@@ -134,16 +120,22 @@ def slot_html(items, target_px, seed, animate):
         pointer-events:none;
       }}
       .slot-window:before {{ top:0; transform:rotate(180deg); }}
-      .slot-window:after {{ bottom:0; }}
+      .slot-window:after  {{ bottom:0; }}
       .center-line {{
         position:absolute; left:0; right:0; top:{ITEM_H}px; height:{ITEM_H}px; z-index:3;
         border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08);
         box-shadow: inset 0 0 24px rgba(255,255,255,.04);
         pointer-events:none;
       }}
+      /* Desaceleración simulada con keyframes: grandes saltos al inicio, pasos cortos al final */
       @keyframes spin-{seed} {{
         0%   {{ transform: translateY(0); }}
-        80%  {{ transform: translateY(-{int(target_px*0.90)}px); }}
+        10%  {{ transform: translateY(-{int(target_px*0.55)}px); }}
+        40%  {{ transform: translateY(-{int(target_px*0.82)}px); }}
+        70%  {{ transform: translateY(-{int(target_px*0.92)}px); }}
+        85%  {{ transform: translateY(-{int(target_px*0.965)}px); }}
+        92%  {{ transform: translateY(-{int(target_px*0.985)}px); }}
+        96%  {{ transform: translateY(-{int(target_px*0.994)}px); }}
         100% {{ transform: translateY(-{target_px}px); }}
       }}
     </style>
@@ -152,8 +144,25 @@ def slot_html(items, target_px, seed, animate):
         col, glow = colors.get(text, DEFAULT_COL)
         return f'<div class="slot-item" style="color:{col}; text-shadow:0 0 16px {glow};">{text}</div>'
 
-    items_html = "".join(item_div(t) for t in items) if final else \
-                 (item_div("— — —") + item_div("— Tocá GIRAR —") + item_div("— — —"))
+    if animate:
+        items_html = "".join(item_div(t) for t in items)
+    else:
+        # Pantalla inicial sin resultado
+        items_html = item_div("— — —") + item_div("— Tocá GIRAR —") + item_div("— — —")
+
+    # JS: cuando termina la animación, enviamos 'done' a Streamlit para revelar el resultado
+    end_signal = f"""
+    <script>
+      (function(){{
+        const track = document.querySelector('.slot-track');
+        if (track) {{
+          track.addEventListener('animationend', function() {{
+            window.parent.postMessage({{isStreamlitMessage:true, type:'streamlit:setComponentValue', value:'done'}}, '*');
+          }});
+        }}
+      }})();
+    </script>
+    """ if animate else ""
 
     body = f"""
       <div class="slot-wrap">
@@ -162,19 +171,24 @@ def slot_html(items, target_px, seed, animate):
           <div class="slot-track">{items_html}</div>
         </div>
       </div>
+      {end_signal}
     """
     return style + body
 
-# animar solo cuando se presionó GIRAR (y aún no revelamos)
-animate = bool(final) and not st.session_state.reveal
-components.html(
-    slot_html(scroll, target_px, seed, animate=animate),
+# Render del slot; capturamos si terminó (value == 'done')
+animate_now = bool(final) and not st.session_state.revealed
+done = components.html(
+    slot_html(scroll, target_px, seed, animate=animate_now),
     height=ITEM_H*VISIBLE_ROWS + 40,
     scrolling=False
 )
 
-# -------- RESULTADO (solo después de revelar) --------
-if st.session_state.reveal and final:
+if done == 'done' and final and not st.session_state.revealed:
+    st.session_state.revealed = True
+    st.rerun()
+
+# ---------- RESULTADO + EMAIL (solo cuando terminó la animación) ----------
+if st.session_state.revealed and final:
     if final == "Seguí participando":
         st.info("😅 Te tocó **Seguí participando**. ¡Probá de nuevo más tarde!")
     else:
@@ -190,11 +204,11 @@ if st.session_state.reveal and final:
                         "accion": "enviar_email_cybermonday",
                         "email": email.strip(),
                         "premio": final,
-                        "cupon": COUPONS[final],
+                        "cupon": COUPONS[final],          # cupón fijo (NO se muestra en pantalla)
                         "periodo": current_period()
                     }
                     try:
-                        r = requests.post(WEB_APP_URL, json=payload, timeout=15)
+                        r = requests.post(WEB_APP_URL, json=payload, timeout=20)
                         r.raise_for_status()
                         res = r.json()
                         if res.get("status") == "ya_participo":
@@ -205,6 +219,5 @@ if st.session_state.reveal and final:
                             st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
                     except requests.exceptions.RequestException as e:
                         st.error(f"❌ Error de conexión: {e}")
-
 
 
