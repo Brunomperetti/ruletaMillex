@@ -5,7 +5,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import streamlit.components.v1 as components
 
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4_b7YvdjTDA4YGDlHAGr5u0Gnk1UEeR9qQVS_dRaWMMOUi8hW4lfziXhvvyhwXn5A/exec"
 
 st.set_page_config(page_title="Cyber Monday - Ruleta Millex", layout="centered", initial_sidebar_state="collapsed")
 
