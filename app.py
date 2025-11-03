@@ -15,7 +15,7 @@ COUPONS = {
     "20% OFF": "CM20-VK6R-3BZ4",
     "15% OFF": "CM15-GQ8D-PN7X",
     "10% OFF": "CM10-LW5C-HR3T",
-    "Seguí participando": "CM00-TRYA-GAIN",
+    "Premio sorpresa": "CM00-TRYA-GAIN",
 }
 
 SPIN_SECONDS = 10.0  # duración total del giro (pedido)
