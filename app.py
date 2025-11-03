@@ -45,8 +45,9 @@ st.session_state.setdefault("final_prize", None)
 st.session_state.setdefault("spin_seed", 0)
 st.session_state.setdefault("revealed", False)
 st.session_state.setdefault("target_px", 0)
+st.session_state.setdefault("mail_sent", False)
 
-# ---------- FORM EMAIL (verifica en backend) ----------
+# ---------- FORM EMAIL ----------
 with st.form("email_form_inicio", clear_on_submit=False):
     email_input = st.text_input("📧 Ingresá tu email para jugar*", placeholder="tu@correo.com")
     confirmar = st.form_submit_button("✅ Confirmar email")
@@ -58,12 +59,11 @@ with st.form("email_form_inicio", clear_on_submit=False):
                 r = requests.post(WEB_APP_URL, json={"accion":"check_email","email":email_input.strip()}, timeout=12)
                 r.raise_for_status()
                 res = r.json()
+                st.session_state.email = email_input.strip()
                 if res.get("status") == "ya_participo":
                     st.session_state.ya_jugo = True
-                    st.session_state.email = email_input.strip()
                     st.error("⚠️ Este correo ya jugó. Solo se permite una vez.")
                 elif res.get("status") == "libre":
-                    st.session_state.email = email_input.strip()
                     st.session_state.ya_jugo = False
                     st.success("✅ ¡Listo! Ya podés jugar.")
                 else:
@@ -80,14 +80,15 @@ if st.session_state.email and not st.session_state.ya_jugo:
             st.session_state.final_prize = pick_prize()
             st.session_state.spin_seed  += 1
             st.session_state.revealed    = False
+            st.session_state.mail_sent   = False
 
     final = st.session_state.final_prize
     seed  = st.session_state.spin_seed
 
-    # Construir carril
+    # carril
     base_cycle = ["20% OFF", "15% OFF", "10% OFF", "Seguí participando", "25% OFF"]
     scroll = []
-    for _ in range(16):            # más largo = más fluido
+    for _ in range(16):
         scroll.extend(base_cycle)
     if final:
         scroll.extend(["15% OFF", "20% OFF", "10% OFF", "Seguí participando"])
@@ -148,15 +149,14 @@ if st.session_state.email and not st.session_state.ya_jugo:
             box-shadow: inset 0 0 24px rgba(255,255,255,.04);
             pointer-events:none;
           }}
-          /* Keyframes con desaceleración simétrica (más pasos cerca del final) */
+          /* Desaceleración suave SIN rebotes ni overshoot */
           @keyframes spin-{seed} {{
             0%   {{ transform: translateY(0); }}
-            20%  {{ transform: translateY(-{int(target_px*0.55)}px); }}
-            55%  {{ transform: translateY(-{int(target_px*0.85)}px); }}
-            75%  {{ transform: translateY(-{int(target_px*0.93)}px); }}
-            88%  {{ transform: translateY(-{int(target_px*0.975)}px); }}
-            94%  {{ transform: translateY(-{int(target_px*0.99)}px); }}
-            97%  {{ transform: translateY(-{int(target_px*0.995)}px); }}
+            15%  {{ transform: translateY(-{int(target_px*0.55)}px); }}
+            45%  {{ transform: translateY(-{int(target_px*0.80)}px); }}
+            70%  {{ transform: translateY(-{int(target_px*0.92)}px); }}
+            85%  {{ transform: translateY(-{int(target_px*0.97)}px); }}
+            93%  {{ transform: translateY(-{int(target_px*0.985)}px); }}
             100% {{ transform: translateY(-{target_px}px); }}
           }}
         </style>
@@ -201,40 +201,40 @@ if st.session_state.email and not st.session_state.ya_jugo:
         scrolling=False
     )
 
-    # Revelar cuando termina (evento animationend)
     if done == 'done' and st.session_state.final_prize and not st.session_state.revealed:
         st.session_state.revealed = True
         st.experimental_rerun()
 
-    # Resultado + envío de cupón (una sola vez) y bloqueo
+    # Resultado + envío (una vez) y bloqueo
     if st.session_state.revealed and st.session_state.final_prize:
         final = st.session_state.final_prize
         if final == "Seguí participando":
-            st.info("😅 Te tocó **Seguí participando**. ¡Probá de nuevo más tarde!")
-            # Bloquear también (ya consumió su juego)
+            st.info("😅 Te tocó **Seguí participando**. ¡Gracias por jugar!")
             st.session_state.ya_jugo = True
         else:
             st.success(f"🎉 ¡Ganaste {final}!")
-            # Enviar cupón automáticamente (no mostramos el código)
-            try:
-                payload = {
-                    "accion": "enviar_email_cybermonday",
-                    "email": st.session_state.email,
-                    "premio": final,
-                    "cupon": COUPONS[final],
-                    "periodo": current_period()
-                }
-                r = requests.post(WEB_APP_URL, json=payload, timeout=20)
-                r.raise_for_status()
-                res = r.json()
-                if res.get("status") == "ya_participo":
-                    st.error("⚠️ Este correo ya había jugado.")
-                elif res.get("status") in ["ok", "success"]:
-                    st.success("✅ ¡Listo! Te enviamos el cupón por mail 🎁")
-                    st.session_state.ya_jugo = True
-                else:
-                    st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
-            except requests.exceptions.RequestException as e:
-                st.error(f"❌ Error de conexión: {e}")
+            if not st.session_state.mail_sent:
+                try:
+                    payload = {
+                        "accion": "enviar_email_cybermonday",
+                        "email": st.session_state.email,
+                        "premio": final,
+                        "cupon": COUPONS[final],
+                        "periodo": current_period()
+                    }
+                    r = requests.post(WEB_APP_URL, json=payload, timeout=20)
+                    r.raise_for_status()
+                    res = r.json()
+                    if res.get("status") == "ya_participo":
+                        st.warning("⚠️ Este correo ya había jugado (no se volvió a enviar).")
+                        st.session_state.ya_jugo = True
+                    elif res.get("status") in ["ok", "success"]:
+                        st.success("✅ ¡Listo! Te enviamos el cupón por mail 🎁")
+                        st.session_state.mail_sent = True
+                        st.session_state.ya_jugo = True
+                    else:
+                        st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
+                except requests.exceptions.RequestException as e:
+                    st.error(f"❌ Error de conexión: {e}")
 
 
