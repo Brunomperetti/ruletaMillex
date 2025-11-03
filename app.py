@@ -27,7 +27,7 @@ st.markdown("""
 <div style="text-align:center;font-weight:900;font-size:38px;line-height:1.15;margin-bottom:6px;">
 🎰 CYBER MONDAY • SLOT MÁGICO PETSU (hasta 25% de descuento)
 </div>
-<p style="text-align:center;color:#8a8a8a;">Ingresá tu email para jugar. Gira ~10s, desacelera y frena una vez. Al frenar se revela tu premio ✨</p>
+<p style="text-align:center;color:#8a8a8a;">Ingresá tu email para jugar.✨</p>
 """, unsafe_allow_html=True)
 
 # ---------- HELPERS ----------
