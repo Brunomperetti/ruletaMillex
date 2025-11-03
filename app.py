@@ -6,7 +6,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 # ---------- CONFIG ----------
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjg_suWbXBwFhSDPxRLVrJLKLHUSOpBJL-YF2ny-qxiYRxgUkptW8lHfmAsfuU3KsR/exec"
 
 PRIZES  = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
 WEIGHTS = [5,          12,         18,          25,         40]
