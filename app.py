@@ -15,6 +15,7 @@ COUPONS = {
     "20% OFF": "CM20-VK6R-3BZ4",
     "15% OFF": "CM15-GQ8D-PN7X",
     "10% OFF": "CM10-LW5C-HR3T",
+    # ¡OJO! NO pongas "Premio sorpresa" acá
 }
 
 SPIN_SECONDS = 10.0
@@ -40,10 +41,7 @@ def current_period():
 def post_json(url, payload, timeout=15):
     r = requests.post(url, json=payload, timeout=timeout)
     r.raise_for_status()
-    try:
-        return r.json()
-    except Exception as e:
-        raise RuntimeError(f"Respuesta no JSON: {r.text[:200]}") from e
+    return r.json()
 
 COL = {
     "25% OFF": "#ff3b3b",
@@ -85,12 +83,14 @@ with st.form("email_form", clear_on_submit=False):
 if st.session_state.email and not st.session_state.ya_jugo:
     colA, colB, colC = st.columns([1,2,1])
     with colB:
-        spin_clicked = st.button("🎯 ¡GIRAR!", use_container_width=True, disabled=st.session_state.final_prize is not None and not st.session_state.mail_sent)
+        spin_clicked = st.button("🎯 ¡GIRAR!", use_container_width=True,
+                                 disabled=st.session_state.final_prize is not None and not st.session_state.mail_sent)
 
     if spin_clicked:
         st.session_state.final_prize = pick_prize()
         st.session_state.mail_sent = False
 
+        # ¡IMPORTANTE! Reel actualizado con "Premio sorpresa"
         reel = ["20% OFF", "15% OFF", "10% OFF", "Premio sorpresa", "25% OFF"]
         slot_box = st.empty()
 
@@ -104,7 +104,7 @@ if st.session_state.email and not st.session_state.ya_jugo:
         while elapsed < SPIN_SECONDS:
             t = (time.time() - start) / SPIN_SECONDS
             t = max(0.0, min(1.0, t))
-            speed = 12 * (1.0 - ease(t)) + 1.0
+            speed = 12 * (1.0 - ease(t)) + 1.0  # desaceleración simétrica
             current_idx = (current_idx + int(max(1, round(speed)))) % len(reel)
             label = reel[current_idx]
 
@@ -149,6 +149,7 @@ if st.session_state.email and not st.session_state.ya_jugo:
         """, unsafe_allow_html=True)
 
         if prize == "Premio sorpresa":
+            # No se envía mail ni cupón
             st.info("😅 ¡Gracias por participar! Te invitamos a visitar nuestra web.")
             st.markdown(
                 """
@@ -165,6 +166,7 @@ if st.session_state.email and not st.session_state.ya_jugo:
             st.session_state.ya_jugo = True
             st.session_state.mail_sent = True
         else:
+            # Enviar cupón (el Apps Script debe estar publicado con la CUENTA de PETSU)
             try:
                 payload = {
                     "accion": "enviar_email_cybermonday",
