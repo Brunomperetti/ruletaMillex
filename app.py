@@ -7,16 +7,16 @@ from zoneinfo import ZoneInfo
 
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
 
-st.set_page_config(page_title="Cyber Monday - Caja Sorpresa Millex", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Cyber Monday - Millex", layout="centered", initial_sidebar_state="collapsed")
 
 st.markdown("""
-<div style="text-align:center;font-weight:900;font-size:40px;margin-bottom:8px;">
-🎁 CYBER MONDAY • CAJA SORPRESA MILLEX
+<div style="text-align:center;font-weight:900;font-size:42px;line-height:1.2;margin-bottom:6px;">
+🎰 CYBER MONDAY • SLOT MÁGICO MILLEX
 </div>
-<p style="text-align:center;color:#666;">Hacé clic en la caja y descubrí tu premio 🎉</p>
+<p style="text-align:center;color:#666;">Tocá el botón y mirá cómo gira la suerte ✨</p>
 """, unsafe_allow_html=True)
 
-# --- Premios ---
+# Premios
 PRIZES = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
 PROB = [5, 12, 18, 25, 40]
 COUPONS = {
@@ -34,145 +34,110 @@ def current_period():
     hoy = datetime.now(ZoneInfo("America/Argentina/Buenos_Aires"))
     return hoy.strftime("%B de %Y").capitalize()
 
-# --- Estado ---
-if "opened" not in st.session_state:
-    st.session_state.opened = False
-if "prize" not in st.session_state:
-    st.session_state.prize = None
+# Estado
+if "final_prize" not in st.session_state:
+    st.session_state.final_prize = None
 
-# --- Caja 3D animada con confetti ---
+# Slot machine HTML
 html = """
 <style>
-.box-scene {
-  width: 180px;
-  height: 180px;
-  margin: 40px auto;
-  perspective: 800px;
-  cursor: pointer;
-  position: relative;
+@keyframes flicker {
+  0%,19%,21%,23%,25%,54%,56%,100% {opacity:1;}
+  20%,24%,55% {opacity:0;}
 }
-.box {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 1s ease;
-  animation: floaty 2.5s ease-in-out infinite;
-}
-@keyframes floaty {
-  0%{transform:translateY(0px);}
-  50%{transform:translateY(-10px);}
-  100%{transform:translateY(0px);}
-}
-.face {
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  background: linear-gradient(145deg,#ff3b3b,#ff8c00);
-  border: 3px solid #111;
-  border-radius: 10px;
-}
-.face.top { transform: rotateX(90deg) translateZ(90px); background:#ff3b3b; }
-.face.bottom { transform: rotateX(-90deg) translateZ(90px); }
-.face.left { transform: rotateY(-90deg) translateZ(90px); }
-.face.right { transform: rotateY(90deg) translateZ(90px); }
-.face.back { transform: rotateY(180deg) translateZ(90px); }
-.face.front { transform: translateZ(90px); background:#ff6f00; }
-
-#confetti-canvas {
-  position: fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  pointer-events:none;
-  z-index:9999;
-}
-.reveal {
-  text-align:center;
-  font-size:32px;
+.slot {
+  font-size:50px;
   font-weight:900;
+  text-align:center;
+  margin:40px auto 20px;
   color:#ff3b3b;
-  animation:fadeInUp 1s ease forwards;
+  text-shadow:0 0 15px rgba(255,0,0,0.6);
+  min-height:80px;
 }
-@keyframes fadeInUp {
-  from{opacity:0;transform:translateY(30px);}
-  to{opacity:1;transform:translateY(0);}
+.spin-btn {
+  background:linear-gradient(90deg,#ff3b3b,#ff8c00);
+  color:white;
+  font-weight:800;
+  border:none;
+  border-radius:8px;
+  padding:16px 40px;
+  font-size:20px;
+  cursor:pointer;
+  transition:0.3s;
+}
+.spin-btn:hover {
+  transform:scale(1.05);
+  background:linear-gradient(90deg,#ff8c00,#ff3b3b);
 }
 </style>
 
-<canvas id="confetti-canvas"></canvas>
-<div class="box-scene" id="boxScene">
-  <div class="box" id="giftBox">
-    <div class="face front"></div>
-    <div class="face back"></div>
-    <div class="face left"></div>
-    <div class="face right"></div>
-    <div class="face top"></div>
-    <div class="face bottom"></div>
-  </div>
+<div style="text-align:center;">
+  <div id="slotText" class="slot">🎁 ¡Preparando tu premio!</div>
+  <button id="spinButton" class="spin-btn">🎯 GIRAR</button>
 </div>
-<p style="text-align:center;font-size:18px;color:#333;">🎁 Tocá la caja para abrirla</p>
 
 <script>
-// Confetti setup
-function launchConfetti(){
-  const duration = 1500;
-  const end = Date.now() + duration;
-  (function frame(){
-    const colors = ['#ff3b3b','#ff9f1a','#ffd60a','#2ecc71','#3498db'];
-    for(let i=0;i<10;i++){
-      const confetti = document.createElement('div');
-      confetti.style.position='fixed';
-      confetti.style.width='10px';
-      confetti.style.height='10px';
-      confetti.style.background=colors[Math.floor(Math.random()*colors.length)];
-      confetti.style.top='50%';
-      confetti.style.left='50%';
-      confetti.style.opacity='0.9';
-      confetti.style.transform=`translate(-50%,-50%) rotate(${Math.random()*360}deg)`;
-      confetti.style.transition='all 1.5s linear';
-      document.body.appendChild(confetti);
-      setTimeout(()=>{
-        confetti.style.transform=`translate(${(Math.random()-0.5)*1000}px,${600+Math.random()*400}px) rotate(${Math.random()*720}deg)`;
-        confetti.style.opacity='0';
-      },10);
-      setTimeout(()=>{confetti.remove();},1600);
-    }
-    if(Date.now()<end){requestAnimationFrame(frame);}
-  })();
-}
+const prizes = ["25% OFF","20% OFF","15% OFF","10% OFF","Seguí participando"];
+const slot = document.getElementById("slotText");
+const button = document.getElementById("spinButton");
+let spinning = false;
 
-const boxScene=document.getElementById('boxScene');
-const giftBox=document.getElementById('giftBox');
-let opened=false;
-boxScene.addEventListener('click',()=>{
-  if(opened)return;
-  opened=true;
-  giftBox.style.transform='rotateX(120deg) rotateY(720deg)';
-  launchConfetti();
-  setTimeout(()=>{window.parent.postMessage({type:'opened'},'*');},1500);
+button.addEventListener("click", ()=>{
+  if(spinning) return;
+  spinning = true;
+  button.disabled = true;
+  let count = 0;
+  const total = 40 + Math.floor(Math.random()*20);
+  const interval = setInterval(()=>{
+    slot.textContent = prizes[count % prizes.length];
+    count++;
+    slot.style.color = ["#ff3b3b","#ff8c00","#ffd60a","#2ecc71","#3498db"][count % prizes.length];
+    slot.style.textShadow = `0 0 20px ${slot.style.color}`;
+    if(count > total){
+      clearInterval(interval);
+      const result = prizes[Math.floor(Math.random()*prizes.length)];
+      slot.textContent = "🎉 " + result + " 🎉";
+      slot.style.animation = "flicker 1.2s ease-in-out 3";
+      setTimeout(()=>{
+        window.parent.postMessage({type:'result', prize: result}, '*');
+      }, 1800);
+    }
+  }, 80);
 });
 </script>
 """
-components.html(html, height=420)
+components.html(html, height=260)
 
-# --- Esperar evento de apertura ---
-if st.session_state.prize is None:
-    st.markdown("<script>window.addEventListener('message',(e)=>{if(e.data.type==='opened'){parent.postMessage({isStreamlitMessage:true,type:'streamlit:setComponentValue',value:true},'*');}})</script>", unsafe_allow_html=True)
-    st.session_state.opened = False
+# JS event listener
+st.markdown("""
+<script>
+window.addEventListener('message',(e)=>{
+  if(e.data && e.data.type==='result'){
+    parent.postMessage({isStreamlitMessage:true,type:'streamlit:setComponentValue',value:e.data.prize},'*');
+  }
+});
+</script>
+""", unsafe_allow_html=True)
 
-if st.button("💥 Abrir caja (si no se abre arriba)", use_container_width=True):
-    st.session_state.opened = True
+# Resultado
+if st.session_state.final_prize is None:
+    st.session_state.final_prize = None
 
-if st.session_state.opened and st.session_state.prize is None:
-    st.session_state.prize = pick_prize()
+slot_result = st.empty()
+if st.session_state.final_prize is None:
+    st.session_state.final_prize = st.text_input("", value="", key="slot_prize_input")
 
-# --- Mostrar resultado ---
-if st.session_state.prize:
-    prize = st.session_state.prize
+if st.session_state.slot_prize_input:
+    prize = st.session_state.slot_prize_input
+    st.session_state.final_prize = prize
+
+# Mostrar premio y formulario
+if st.session_state.final_prize:
+    prize = st.session_state.final_prize
     if prize == "Seguí participando":
-        st.warning("😅 Te tocó **Seguí participando**. ¡Probá otra vez más tarde!")
+        st.warning("😅 Te tocó **Seguí participando**. ¡Probá de nuevo más tarde!")
     else:
-        st.markdown(f"<div class='reveal'>🎉 ¡Tu premio es: {prize}!</div>", unsafe_allow_html=True)
+        st.success(f"🎉 ¡Ganaste {prize}!")
         with st.form("email_form", clear_on_submit=False):
             email = st.text_input("📧 Ingresá tu email para recibir tu cupón*", placeholder="tu@correo.com")
             enviar = st.form_submit_button("✉️ Enviarme el cupón", use_container_width=True)
@@ -192,9 +157,10 @@ if st.session_state.prize:
                         r.raise_for_status()
                         res = r.json()
                         if res.get("status") == "ya_participo":
-                            st.error("⚠️ Este correo ya participó en la Caja Sorpresa.")
+                            st.error("⚠️ Este correo ya participó.")
                         elif res.get("status") in ["ok", "success"]:
-                            st.success("✅ ¡Listo! Revisá tu correo, te mandamos tu cupón 🎁")
+                            st.balloons()
+                            st.success("✅ ¡Listo! Revisá tu correo, te mandamos el cupón 🎁")
                         else:
                             st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
                     except requests.exceptions.RequestException as e:
