@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 import streamlit.components.v1 as components
 
 # ---- CONFIG ----
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjg_suWbXBwFhSDPxRLVrJLKLHUSOpBJL-YF2ny-qxiYRxgUkptW8lHfmAsfuU3KsR/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
 PRIZES  = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
 WEIGHTS = [5,          12,         18,          25,         40]
 COUPONS = {
@@ -18,7 +18,6 @@ COUPONS = {
 }
 
 st.set_page_config(page_title="Cyber Monday - Millex", layout="centered", initial_sidebar_state="collapsed")
-
 st.markdown("""
 <div style="text-align:center;font-weight:900;font-size:42px;line-height:1.15;margin-bottom:6px;">
 🎰 CYBER MONDAY • SLOT MÁGICO MILLEX
@@ -35,7 +34,7 @@ def current_period():
 
 # ---- STATE ----
 st.session_state.setdefault("final_prize", None)
-st.session_state.setdefault("spin_seed", 0)  # fuerza recrear la animación
+st.session_state.setdefault("spin_seed", 0)
 
 # ---- SPIN BUTTON ----
 colA, colB, colC = st.columns([1,2,1])
@@ -47,32 +46,28 @@ with colB:
 final = st.session_state.final_prize
 seed  = st.session_state.spin_seed
 
-# ---- BUILD THE REEL (determinístico) ----
-ITEM_H = 72                    # altura de cada línea (coincide con CSS)
-VISIBLE_ROWS = 3               # se ven 3 líneas (arriba/centro/abajo)
-CENTER_IDX = 1                 # índice de la fila central visible (0,1,2) -> 1
+# ---- BUILD THE REEL ----
+ITEM_H = 72
+VISIBLE_ROWS = 3
+CENTER_IDX = 1
 base_cycle = ["20% OFF", "15% OFF", "10% OFF", "Seguí participando", "25% OFF"]
 
-# armamos el scroll
 scroll = []
-for _ in range(10):            # vueltas “rápidas”
+for _ in range(10):
     scroll.extend(base_cycle)
 
 if final:
     scroll.extend(base_cycle)
-    # Un poquito de suspenso y terminamos con el final
     scroll.extend(["15% OFF","20% OFF","10% OFF","Seguí participando"])
     scroll.append(final)
 
-# cuánto desplazarnos para que el FINAL quede centrado
 if final:
-    stop_index = len(scroll) - 1            # el final es el último item agregado
-    top_index  = stop_index - CENTER_IDX    # índice del item que debe quedar arriba
+    stop_index = len(scroll) - 1
+    top_index  = stop_index - CENTER_IDX
     target_px  = max(0, top_index * ITEM_H)
 else:
     target_px  = 0
 
-# colores
 colors = {
     "25% OFF": ("#ff3b3b", "rgba(255,59,59,.45)"),
     "20% OFF": ("#ff8c00", "rgba(255,140,0,.45)"),
@@ -80,6 +75,8 @@ colors = {
     "10% OFF": ("#2ecc71", "rgba(46,204,113,.45)"),
     "Seguí participando": ("#5fa8d3", "rgba(95,168,211,.45)"),
 }
+# Fallback para placeholders
+DEFAULT_COL = ("#dddddd", "rgba(255,255,255,.25)")
 
 def slot_html(items, target_px, seed, final_text):
     style = f"""
@@ -125,13 +122,14 @@ def slot_html(items, target_px, seed, final_text):
     </style>
     """
     def item_div(text):
-        col, glow = colors[text]
+        col, glow = colors.get(text, DEFAULT_COL)  # <- Fallback evita KeyError
         return f'<div class="slot-item" style="color:{col}; text-shadow:0 0 16px {glow};">{text}</div>'
 
     if final_text:
         items_html = "".join(item_div(t) for t in items)
     else:
-        items_html = item_div("— — —") + item_div("— — —") + item_div("— — —")
+        # Placeholders antes de girar
+        items_html = item_div("— — —") + item_div("— Tocá GIRAR —") + item_div("— — —")
 
     body = f"""
       <div class="slot-wrap">
@@ -149,7 +147,7 @@ components.html(
     scrolling=False
 )
 
-# ---- RESULTADO + EMAIL (SIEMPRE COHERENTE CON 'final') ----
+# ---- RESULTADO + EMAIL ----
 if final:
     if final == "Seguí participando":
         st.info("😅 Te tocó **Seguí participando**. ¡Probá de nuevo más tarde!")
@@ -166,7 +164,7 @@ if final:
                         "accion": "enviar_email_cybermonday",
                         "email": email.strip(),
                         "premio": final,
-                        "cupon": COUPONS[final],          # cupón fijo correspondiente (NO se muestra)
+                        "cupon": COUPONS[final],
                         "periodo": current_period()
                     }
                     try:
@@ -181,7 +179,6 @@ if final:
                             st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
                     except requests.exceptions.RequestException as e:
                         st.error(f"❌ Error de conexión: {e}")
-
 
 
 
