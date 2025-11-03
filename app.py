@@ -5,15 +5,16 @@ import streamlit.components.v1 as components
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+# Tu Apps Script
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
 
-st.set_page_config(page_title="Cyber Monday - Ruleta Millex", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Cyber Monday - Caja Sorpresa Millex", layout="centered", initial_sidebar_state="collapsed")
 
 st.markdown("""
-<div style="text-align:center;font-weight:800;font-size:38px;line-height:1.2;margin-bottom:8px;">
-🛍️ CYBER MONDAY<br>🎡 RULETA MÁGICA MILLEX 🎡
+<div style="text-align:center;font-weight:800;font-size:40px;line-height:1.2;margin-bottom:6px;">
+🎁 CYBER MONDAY • CAJA SORPRESA MILLEX
 </div>
-<p style="text-align:center;color:#555;">Girás, ganás y te llega el cupón por mail. ¡Probá tu suerte!</p>
+<p style="text-align:center;color:#555;">Hacé clic en la caja y descubrí tu premio mágico 🎉</p>
 """, unsafe_allow_html=True)
 
 PRIZES = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
@@ -34,56 +35,61 @@ def current_period():
     return hoy.strftime("%B de %Y").capitalize()
 
 # Estado
-if "result" not in st.session_state:
-    st.session_state.result = None
+if "opened" not in st.session_state:
+    st.session_state.opened = False
+if "prize" not in st.session_state:
+    st.session_state.prize = None
 
-# --- Ruleta interactiva (animación SVG + confetti) ---
-html_code = """
-<div style="text-align:center;">
-  <svg id="wheel" viewBox="0 0 500 500" width="300" height="300" style="transform:rotate(0deg);transition:transform 4s cubic-bezier(.17,.67,.29,1.29);">
-    <defs>
-      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#ff3b3b;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#ff9f1a;stop-opacity:1" />
-      </linearGradient>
-    </defs>
-    <circle cx="250" cy="250" r="240" fill="url(#grad)" stroke="#222" stroke-width="6"/>
-    <text x="250" y="260" text-anchor="middle" font-size="40" font-weight="bold" fill="#fff">🎡</text>
-  </svg>
-  <div style="position:relative;margin-top:8px;">
-    <div style="position:absolute;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:20px solid #000;"></div>
+# --- Caja animada ---
+html_box = """
+<div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
+  <div id="box" style="position:relative;width:180px;height:180px;cursor:pointer;">
+    <div id="lid" style="position:absolute;width:100%;height:35%;background:#ff3b3b;border-radius:10px 10px 0 0;top:0;transition:transform 0.6s ease;z-index:2;"></div>
+    <div id="base" style="position:absolute;width:100%;height:70%;background:#ff6f00;border-radius:0 0 10px 10px;bottom:0;z-index:1;"></div>
+    <div id="ribbon" style="position:absolute;width:20%;height:100%;background:#fff;left:40%;z-index:3;"></div>
   </div>
+  <p style="color:#444;font-size:18px;">🎁 Tocá la caja para abrirla</p>
 </div>
 <script>
-const wheel = document.getElementById('wheel');
-window.addEventListener('message', (event)=>{
-  if(event.data.type==='spin'){
-    const spins = Math.floor(Math.random()*5)+5;
-    const target = event.data.angle || 0;
-    wheel.style.transform = `rotate(${spins*360+target}deg)`;
-    setTimeout(()=>{window.parent.postMessage({type:'done'},'*');},3800);
-  }
-});
+  const box = document.getElementById('box');
+  const lid = document.getElementById('lid');
+  let opened = false;
+  box.addEventListener('click', ()=>{
+    if(opened) return;
+    opened = true;
+    lid.style.transform = 'rotateX(160deg)';
+    setTimeout(()=>{window.parent.postMessage({type:'opened'},'*');},1000);
+  });
 </script>
 """
-components.html(html_code, height=360)
+components.html(html_box, height=300)
 
-# --- Botón para girar ---
-if st.button("🎯 ¡GIRAR AHORA!", use_container_width=True):
-    prize = pick_prize()
-    st.session_state.result = prize
-    components.html(
-        f"<script>window.parent.postMessage({{type:'spin',angle:{random.randint(0,360)}}},'*');</script>",
-        height=0
-    )
+# --- Evento de apertura ---
+if not st.session_state.opened:
+    st.session_state.opened = False
 
-# --- Resultado ---
-if st.session_state.result:
-    prize = st.session_state.result
+if st.session_state.prize is None:
+    st.markdown("<script>window.addEventListener('message',(e)=>{if(e.data.type==='opened'){parent.postMessage({isStreamlitMessage:true,type:'streamlit:setComponentValue',value:true},'*');}})</script>", unsafe_allow_html=True)
+    st.session_state.opened = False
+
+# Simular detección de “abierta”
+placeholder = st.empty()
+if not st.session_state.opened:
+    st.session_state.opened = st.button("💥 Abrir la caja (si no se abre arriba)", use_container_width=True)
+
+# --- Mostrar premio cuando se abre ---
+if st.session_state.opened and st.session_state.prize is None:
+    st.session_state.prize = pick_prize()
+
+if st.session_state.prize:
+    prize = st.session_state.prize
     if prize == "Seguí participando":
         st.warning("😅 Te tocó **Seguí participando**. ¡Probá de nuevo más tarde!")
     else:
-        st.success(f"🎉 ¡Tu premio es: {prize}!")
+        st.markdown(
+            f"<div style='text-align:center;font-size:26px;font-weight:700;color:#ff3b3b;'>🎉 ¡Tu premio es: {prize}!</div>",
+            unsafe_allow_html=True,
+        )
         with st.form("email_form", clear_on_submit=False):
             email = st.text_input("📧 Ingresá tu email para recibir tu cupón*", placeholder="tu@correo.com")
             enviar = st.form_submit_button("✉️ Enviarme el cupón", use_container_width=True)
@@ -103,15 +109,14 @@ if st.session_state.result:
                         r.raise_for_status()
                         res = r.json()
                         if res.get("status") == "ya_participo":
-                            st.error("⚠️ Este correo ya participó en la Ruleta Mágica.")
+                            st.error("⚠️ Este correo ya participó en la Caja Sorpresa.")
                         elif res.get("status") in ["ok", "success"]:
                             st.balloons()
-                            st.success("✅ ¡Listo! Revisá tu correo, te mandamos el cupón 🎁")
+                            st.success("✅ ¡Listo! Revisá tu correo, te mandamos tu cupón 🎁")
                         else:
                             st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
                     except requests.exceptions.RequestException as e:
                         st.error(f"❌ Error de conexión: {e}")
-
 
 
 
