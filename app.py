@@ -8,6 +8,7 @@ import streamlit.components.v1 as components
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
 
 st.set_page_config(page_title="Cyber Monday - Millex", layout="centered", initial_sidebar_state="collapsed")
+
 st.markdown("""
 <div style="text-align:center;font-weight:900;font-size:42px;line-height:1.15;margin-bottom:4px;">
 🎰 CYBER MONDAY • SLOT MÁGICO MILLEX
@@ -15,9 +16,9 @@ st.markdown("""
 <p style="text-align:center;color:#666;">Tocá el botón y mirá cómo gira la suerte ✨</p>
 """, unsafe_allow_html=True)
 
-# Premios y pesos
+# Premios y probabilidades
 PRIZES = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
-PROB   = [5,          12,         18,          25,         40]
+PROB   = [5, 12, 18, 25, 40]
 
 # Cupones fijos (no se muestran en pantalla)
 COUPONS = {
@@ -35,20 +36,20 @@ def current_period():
     hoy = datetime.now(ZoneInfo("America/Argentina/Buenos_Aires"))
     return hoy.strftime("%B de %Y").capitalize()
 
-# Estado
+# Estado de la app
 st.session_state.setdefault("final_prize", None)
-st.session_state.setdefault("spinning_token", 0)
+st.session_state.setdefault("spin_token", 0)
 
 colA, colB, colC = st.columns([1,2,1])
 with colB:
     if st.button("🎯 ¡GIRAR!", use_container_width=True):
-        st.session_state.final_prize = pick_prize()  # Python decide el resultado
-        st.session_state.spinning_token += 1         # fuerza re-render de la animación
+        st.session_state.final_prize = pick_prize()
+        st.session_state.spin_token += 1
 
-# HTML del slot: anima rápido y se detiene en el premio que ya decidió Python
 final = st.session_state.final_prize or ""
-token = st.session_state.spinning_token  # evita cache del iframe
+token = st.session_state.spin_token
 
+# HTML con animación de slot corregido
 html = f"""
 <style>
 .slot-wrap {{
@@ -75,16 +76,6 @@ html = f"""
 .slot-item.c3 {{ color:#ffd60a; text-shadow: 0 0 14px rgba(255,214,10,.45); }}
 .slot-item.c4 {{ color:#2ecc71; text-shadow: 0 0 14px rgba(46,204,113,.45); }}
 .slot-item.c5 {{ color:#3498db; text-shadow: 0 0 14px rgba(52,152,219,.45); }}
-
-.reveal {{
-  text-align:center; font-size:28px; font-weight:900; color:#ff3b3b;
-  animation: pop .8s ease both;
-}}
-@keyframes pop {{
-  0% {{ transform:scale(.7); opacity:0 }}
-  60%{{ transform:scale(1.08); opacity:1 }}
-  100%{{ transform:scale(1) }}
-}}
 .glow {{
   position:absolute; inset:-6px; border-radius:16px;
   box-shadow: 0 0 22px rgba(255,153,0,.35), 0 0 40px rgba(255,59,59,.30) inset;
@@ -96,7 +87,6 @@ html = f"""
   <div class="slot-window">
     <div class="glow"></div>
     <div class="slot-track" id="track">
-      <!-- Secuencia rápida (simulada) -->
       <div class="slot-item">20% OFF</div>
       <div class="slot-item c3">15% OFF</div>
       <div class="slot-item c4">10% OFF</div>
@@ -109,43 +99,37 @@ html = f"""
       <div class="slot-item c4">10% OFF</div>
       <div class="slot-item c3">15% OFF</div>
       <div class="slot-item c5">Seguí participando</div>
-      <!-- Resultado final (inyectado) -->
       <div class="slot-item" id="finalText">{"🎉 " + final + " 🎉" if final else ""}</div>
     </div>
   </div>
 </div>
 
 <script>
-(function(){{
+(function() {{
   const final = {repr(final)};
   const track = document.getElementById('track');
   if(!track) return;
 
-  // altura aproximada de cada "item" (72px + padding)
   const step = 72;
-  const items = track.children.length;
-  const spinRows = 14; // filas que "pasan"
+  const spinRows = 14;
   let y = 0;
   let i = 0;
 
-  function tick(){
+  function tick() {{
     y -= step;
-    track.style.transform = `translateY(${y}px)`;
+    track.style.transform = `translateY(${{y}}px)`;
     i++;
-    if(i < spinRows){{
-      setTimeout(tick, i < 6 ? 60 : i < 10 ? 80 : 110); // desacelera
+    if(i < spinRows) {{
+      setTimeout(tick, i < 6 ? 60 : i < 10 ? 80 : 110);
     }} else {{
-      // Detener y setear resultado visible
       const f = document.getElementById('finalText');
-      if(f && final){{
+      if(f && final) {{
         f.textContent = "🎉 " + final + " 🎉";
       }}
     }}
-  }
+  }}
 
-  // Solo animar si hay un resultado (cuando apretaste GIRAR)
-  if(final){{
-    // reinicio al top
+  if(final) {{
     track.style.transform = 'translateY(0px)';
     setTimeout(tick, 80);
   }}
@@ -154,7 +138,7 @@ html = f"""
 """
 components.html(html, height=260, scrolling=False)
 
-# Mostrar resultado + formulario email
+# Resultado + formulario
 if st.session_state.final_prize:
     prize = st.session_state.final_prize
     if prize == "Seguí participando":
@@ -168,13 +152,13 @@ if st.session_state.final_prize:
                 if not email or "@" not in email:
                     st.error("Ingresá un email válido.")
                 else:
-                    payload = {{
+                    payload = {
                         "accion": "enviar_email_cybermonday",
                         "email": email.strip(),
                         "premio": prize,
                         "cupon": COUPONS[prize],
                         "periodo": current_period()
-                    }}
+                    }
                     try:
                         r = requests.post(WEB_APP_URL, json=payload, timeout=15)
                         r.raise_for_status()
@@ -182,11 +166,13 @@ if st.session_state.final_prize:
                         if res.get("status") == "ya_participo":
                             st.error("⚠️ Este correo ya participó.")
                         elif res.get("status") in ["ok", "success"]:
+                            st.balloons()
                             st.success("✅ ¡Listo! Revisá tu correo, te mandamos el cupón 🎁")
                         else:
-                            st.error(f"❌ Error: {{res.get('message','No se pudo enviar el mail')}}")
+                            st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
                     except requests.exceptions.RequestException as e:
-                        st.error(f"❌ Error de conexión: {{e}}")
+                        st.error(f"❌ Error de conexión: {e}")
+
 
 
 
