@@ -54,7 +54,7 @@ COL = {
     "20% OFF": "#ff8c00",
     "15% OFF": "#ffd60a",
     "10% OFF": "#2ecc71",
-    "Seguí participando": "#5fa8d3",
+    "Premio sorpresa": "#5fa8d3",
 }
 
 # ---------- STATE ----------
