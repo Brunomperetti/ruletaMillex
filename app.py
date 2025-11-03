@@ -6,7 +6,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 # ---------- CONFIG ----------
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7_601m55rWtXtKhayUah2iWRsjqc--4-AfxJMZYhxpGpbtSXeoje2uq5G363zcb8z/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw-M2XeKCLCL49Egk7LX4y3TmXh7A-OKqxAaXjOubrUG-6I8MJlWSOvS5S-IVR0uMOs/exec"
 
 PRIZES  = ["25% OFF", "20% OFF", "15% OFF", "10% OFF", "Seguí participando"]
 WEIGHTS = [5,          12,         18,          25,         40]
@@ -23,13 +23,12 @@ VISIBLE_ROWS = 3
 CENTER_IDX = 1
 ANIMATION_DURATION = 10.0  # segundos
 
-# ---------- CONFIG PÁGINA ----------
 st.set_page_config(page_title="Cyber Monday - Millex", layout="centered", initial_sidebar_state="collapsed")
 st.markdown("""
 <div style="text-align:center;font-weight:900;font-size:42px;line-height:1.15;margin-bottom:6px;">
 🎰 CYBER MONDAY • SLOT MÁGICO MILLEX
 </div>
-<p style="text-align:center;color:#8a8a8a;">Ingresá tu mail para jugar. Gira por 10 segundos y se revela tu premio ✨</p>
+<p style="text-align:center;color:#8a8a8a;">Ingresá tu mail para jugar. Gira ~10s, desacelera y frena solo. Al frenar se revela tu premio ✨</p>
 """, unsafe_allow_html=True)
 
 def pick_prize():
@@ -47,35 +46,32 @@ st.session_state.setdefault("spin_seed", 0)
 st.session_state.setdefault("revealed", False)
 st.session_state.setdefault("target_px", 0)
 
-# ---------- FORM EMAIL ----------
+# ---------- FORM EMAIL (verifica en backend) ----------
 with st.form("email_form_inicio", clear_on_submit=False):
-    email = st.text_input("📧 Ingresá tu email para jugar*", placeholder="tu@correo.com")
+    email_input = st.text_input("📧 Ingresá tu email para jugar*", placeholder="tu@correo.com")
     confirmar = st.form_submit_button("✅ Confirmar email")
     if confirmar:
-        if not email or "@" not in email:
+        if not email_input or "@" not in email_input:
             st.error("Por favor ingresá un email válido.")
         else:
-            # Verificar si ya participó (pide al backend)
             try:
-                check = requests.post(WEB_APP_URL, json={
-                    "accion": "enviar_email_cybermonday",
-                    "email": email.strip(),
-                    "premio": "check",
-                    "cupon": "",
-                    "periodo": current_period()
-                }, timeout=10)
-                res = check.json()
+                r = requests.post(WEB_APP_URL, json={"accion":"check_email","email":email_input.strip()}, timeout=12)
+                r.raise_for_status()
+                res = r.json()
                 if res.get("status") == "ya_participo":
                     st.session_state.ya_jugo = True
-                    st.error("⚠️ Este correo ya participó en la ruleta.")
-                else:
-                    st.session_state.email = email.strip()
+                    st.session_state.email = email_input.strip()
+                    st.error("⚠️ Este correo ya jugó. Solo se permite una vez.")
+                elif res.get("status") == "libre":
+                    st.session_state.email = email_input.strip()
                     st.session_state.ya_jugo = False
                     st.success("✅ ¡Listo! Ya podés jugar.")
-            except requests.exceptions.RequestException:
-                st.error("❌ Error de conexión. Intentá de nuevo.")
+                else:
+                    st.error("❌ No se pudo validar el correo.")
+            except requests.exceptions.RequestException as e:
+                st.error(f"❌ Error de conexión: {e}")
 
-# ---------- RUEDA ----------
+# ---------- SLOT ----------
 if st.session_state.email and not st.session_state.ya_jugo:
     colA, colB, colC = st.columns([1,2,1])
     with colB:
@@ -88,9 +84,10 @@ if st.session_state.email and not st.session_state.ya_jugo:
     final = st.session_state.final_prize
     seed  = st.session_state.spin_seed
 
+    # Construir carril
     base_cycle = ["20% OFF", "15% OFF", "10% OFF", "Seguí participando", "25% OFF"]
     scroll = []
-    for _ in range(14):
+    for _ in range(16):            # más largo = más fluido
         scroll.extend(base_cycle)
     if final:
         scroll.extend(["15% OFF", "20% OFF", "10% OFF", "Seguí participando"])
@@ -104,6 +101,7 @@ if st.session_state.email and not st.session_state.ya_jugo:
         st.session_state.target_px = 0
 
     target_px = st.session_state.target_px
+
     colors = {
         "25% OFF": ("#ff3b3b", "rgba(255,59,59,.45)"),
         "20% OFF": ("#ff8c00", "rgba(255,140,0,.45)"),
@@ -114,6 +112,7 @@ if st.session_state.email and not st.session_state.ya_jugo:
     DEFAULT_COL = ("#dddddd", "rgba(255,255,255,.25)")
 
     def slot_html(items, target_px, seed, animate: bool):
+        dur = ANIMATION_DURATION
         style = f"""
         <style>
           .slot-wrap {{
@@ -129,7 +128,7 @@ if st.session_state.email and not st.session_state.ya_jugo:
             position:absolute; left:0; right:0; top:0;
             display:flex; flex-direction:column; align-items:center;
             transform: translateY(0);
-            {"animation: spin-"+str(seed)+f" {ANIMATION_DURATION}s ease-out forwards;" if animate else ""}
+            {"animation: spin-"+str(seed)+f" {dur}s cubic-bezier(.22,.61,.36,1) forwards;" if animate else ""}
           }}
           .slot-item {{
             height:{ITEM_H}px; line-height:{ITEM_H}px;
@@ -149,11 +148,15 @@ if st.session_state.email and not st.session_state.ya_jugo:
             box-shadow: inset 0 0 24px rgba(255,255,255,.04);
             pointer-events:none;
           }}
+          /* Keyframes con desaceleración simétrica (más pasos cerca del final) */
           @keyframes spin-{seed} {{
             0%   {{ transform: translateY(0); }}
-            50%  {{ transform: translateY(-{int(target_px*0.75)}px); }}
-            80%  {{ transform: translateY(-{int(target_px*0.9)}px); }}
-            95%  {{ transform: translateY(-{int(target_px*0.98)}px); }}
+            20%  {{ transform: translateY(-{int(target_px*0.55)}px); }}
+            55%  {{ transform: translateY(-{int(target_px*0.85)}px); }}
+            75%  {{ transform: translateY(-{int(target_px*0.93)}px); }}
+            88%  {{ transform: translateY(-{int(target_px*0.975)}px); }}
+            94%  {{ transform: translateY(-{int(target_px*0.99)}px); }}
+            97%  {{ transform: translateY(-{int(target_px*0.995)}px); }}
             100% {{ transform: translateY(-{target_px}px); }}
           }}
         </style>
@@ -161,6 +164,7 @@ if st.session_state.email and not st.session_state.ya_jugo:
         def item_div(text):
             col, glow = colors.get(text, DEFAULT_COL)
             return f'<div class="slot-item" style="color:{col}; text-shadow:0 0 16px {glow};">{text}</div>'
+
         if animate:
             items_html = "".join(item_div(t) for t in items)
         else:
@@ -190,20 +194,28 @@ if st.session_state.email and not st.session_state.ya_jugo:
         {end_signal}
         """
 
-    animate_now = bool(final) and not st.session_state.revealed
-    done = components.html(slot_html(scroll, target_px, seed, animate=animate_now),
-                           height=ITEM_H*VISIBLE_ROWS + 40, scrolling=False)
+    animate_now = bool(st.session_state.final_prize) and not st.session_state.revealed
+    done = components.html(
+        slot_html(scroll, target_px, seed, animate=animate_now),
+        height=ITEM_H*VISIBLE_ROWS + 40,
+        scrolling=False
+    )
 
-    if done == 'done' and final and not st.session_state.revealed:
+    # Revelar cuando termina (evento animationend)
+    if done == 'done' and st.session_state.final_prize and not st.session_state.revealed:
         st.session_state.revealed = True
-        st.rerun()
+        st.experimental_rerun()
 
-    if st.session_state.revealed and final:
+    # Resultado + envío de cupón (una sola vez) y bloqueo
+    if st.session_state.revealed and st.session_state.final_prize:
+        final = st.session_state.final_prize
         if final == "Seguí participando":
             st.info("😅 Te tocó **Seguí participando**. ¡Probá de nuevo más tarde!")
+            # Bloquear también (ya consumió su juego)
+            st.session_state.ya_jugo = True
         else:
             st.success(f"🎉 ¡Ganaste {final}!")
-            # Enviar mail con cupón
+            # Enviar cupón automáticamente (no mostramos el código)
             try:
                 payload = {
                     "accion": "enviar_email_cybermonday",
@@ -216,9 +228,9 @@ if st.session_state.email and not st.session_state.ya_jugo:
                 r.raise_for_status()
                 res = r.json()
                 if res.get("status") == "ya_participo":
-                    st.error("⚠️ Este correo ya participó.")
+                    st.error("⚠️ Este correo ya había jugado.")
                 elif res.get("status") in ["ok", "success"]:
-                    st.success("✅ ¡Listo! Revisá tu correo, te mandamos el cupón 🎁")
+                    st.success("✅ ¡Listo! Te enviamos el cupón por mail 🎁")
                     st.session_state.ya_jugo = True
                 else:
                     st.error(f"❌ Error: {res.get('message','No se pudo enviar el mail')}")
